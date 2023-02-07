@@ -97,5 +97,19 @@ public class Commit implements JGitObject {
     /** Checkout the commit.
      * Removes all working directory content and restores the state of this commit.  **/
     void checkout() {
+        File workingDirectory = new File(".");
+        File[] files = workingDirectory.listFiles();
+        if( files != null){
+            for (File file : files) {
+                if (file.isFile()) {
+                    if (!file.delete()) {
+                        System.out.println("Error deleting file: " + file.getName());
+                    }
+                }
+            }
+        }
+
+        this.state.restore("");
+
     }
 }
