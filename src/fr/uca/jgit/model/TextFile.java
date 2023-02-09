@@ -1,10 +1,13 @@
 package fr.uca.jgit.model;
 
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.List;
 import java.util.Scanner;
-import java.util.zip.GZIPInputStream;
-import java.util.zip.GZIPOutputStream;
+
 
 public class TextFile implements Node {
     private String content;
@@ -84,5 +87,45 @@ public class TextFile implements Node {
             System.out.println("An error occurred.");
             e.printStackTrace();
         }
+    }
+
+    /** Merges the given file with this file. **/
+    @Override
+    public Node merge(Node other) throws IOException {
+        TextFile otherFile = (TextFile) other;
+        List<String> file1Lines = List.of(this.content.split("\n"));
+        List<String> file2Lines = List.of(otherFile.content.split("\n"));
+        StringBuilder output = new StringBuilder();
+
+        int i = 0;
+        int j = 0;
+
+        while (i < file1Lines.size() && j < file2Lines.size()) {
+            String line1 = file1Lines.get(i);
+            String line2 = file2Lines.get(j);
+
+            if (line1.equals(line2)) {
+                output.append(line1).append("\n");
+                i++;
+                j++;
+            } else {
+                return null;
+            }
+        }
+
+        while (i < file1Lines.size()) {
+            output.append(file1Lines.get(i)).append("\n");
+            i++;
+        }
+
+        while (j < file2Lines.size()) {
+            output.append(file2Lines.get(j)).append("\n");
+            j++;
+        }
+
+        String outputStr = output.toString();
+        TextFile mergedFile = new TextFile();
+        mergedFile.content = String.valueOf(Files.readAllLines(Paths.get(outputStr)));
+        return mergedFile;
     }
 }
