@@ -1,9 +1,6 @@
 package fr.uca.jgit.model;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -105,5 +102,28 @@ public class Folder implements Node {
             System.err.println("Failed to create directory!" + e.getMessage());
 
         }
+    }
+
+    /**
+     * Change the current branch to a specified branch
+     *
+     * @param branchName - name of the branch to check out
+     */
+    public void changeBranch(String branchName) throws IOException {
+        // Check if the branch exists
+        File branchFile = new File(".git/refs/heads/" + branchName);
+        if (!branchFile.exists()) {
+            System.out.println("Branch " + branchName + " does not exist");
+            return ;
+        }
+
+        // Get the hash of the head commit
+        BufferedReader br = new BufferedReader(new FileReader(branchFile));
+        String hash = br.readLine();
+        br.close();
+
+        // Load the commit with the given hash
+        this.children =  loadFolder(hash).children;
+        System.out.println("Switched to a new branch " + branchName);
     }
 }

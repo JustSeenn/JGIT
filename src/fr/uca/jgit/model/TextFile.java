@@ -85,4 +85,27 @@ public class TextFile implements Node {
             e.printStackTrace();
         }
     }
+
+    /**
+     * Change the current branch to a specified branch
+     *
+     * @param branchName - name of the branch to check out
+     */
+    public void changeBranch(String branchName) throws IOException {
+        // Check if the branch exists
+        File branchFile = new File(".git/refs/heads/" + branchName);
+        if (!branchFile.exists()) {
+            System.out.println("Branch " + branchName + " does not exist");
+            return ;
+        }
+
+        // Get the hash of the head commit
+        BufferedReader br = new BufferedReader(new FileReader(branchFile));
+        String hash = br.readLine();
+        br.close();
+
+        // Load the commit with the given hash
+        this.content = loadFile(hash).content;
+        System.out.println("Switched to a new branch " + branchName);
+    }
 }
