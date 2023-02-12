@@ -116,6 +116,18 @@ public class Commit implements JGitObject {
     /**
      * Create a new branch if not exist
      * @param branchName - name of the branch to create
+     * @throws IOException
+     */
+    public static void createBranch(String branchName) throws IOException {
+        Commit commit = new Commit();
+        commit.store();
+        String commitHash = commit.hash();
+        createBranch(branchName, commitHash);
+    }
+
+    /**
+     * Create a new branch if not exist
+     * @param branchName - name of the branch to create
      * @param commitHash - commit hash of the branch
      * @throws IOException
      */
