@@ -32,14 +32,8 @@ public class TextFile implements Node {
     @Override
     public void store() {
         try {
-            File myObj = new File(".git/object/"+ this.hash());
-            FileWriter myWriter = new FileWriter(".git/object/"+ this.hash());
+            FileWriter myWriter = new FileWriter("./jgit/object/"+this.hash());
 
-            if (myObj.createNewFile()) {
-                System.out.println("File created: " + myObj.getName());
-            } else {
-                System.out.println("File already exists.");
-            }
             myWriter.write(this.content); // compress it ?
             myWriter.close();
 
@@ -53,7 +47,7 @@ public class TextFile implements Node {
     public static TextFile loadFile(String hash) {
         StringBuilder content = new StringBuilder();
         try {
-            File myObj = new File(".git/object/"+hash);
+            File myObj = new File("./jgit/object/"+hash);
             Scanner myReader = new Scanner(myObj);
             while (myReader.hasNextLine()) {
                 content.append(myReader.nextLine());
@@ -91,7 +85,7 @@ public class TextFile implements Node {
 
     /** Merges the given file with this file. **/
     @Override
-    public Node merge(Node other) throws IOException {
+    public Node merge(Node other) {
         TextFile otherFile = (TextFile) other;
         List<String> file1Lines = List.of(this.content.split("\n"));
         List<String> file2Lines = List.of(otherFile.content.split("\n"));
@@ -103,14 +97,25 @@ public class TextFile implements Node {
         while (i < file1Lines.size() && j < file2Lines.size()) {
             String line1 = file1Lines.get(i);
             String line2 = file2Lines.get(j);
-
             if (line1.equals(line2)) {
                 output.append(line1).append("\n");
-                i++;
-                j++;
+
             } else {
-                return null;
+                System.out.println("Conflict detected at the line " + (i + 1) + ": ");
+                System.out.println("Version 1: " + line1);
+                System.out.println("Version 2: " + line2);
+                System.out.println("Choose if you want the version (1 or 2):");
+                Scanner scanner = new Scanner(System.in);
+                int choice = scanner.nextInt();
+                if (choice == 1) {
+                    output.append(line1).append("\n");
+
+                } else {
+                    output.append(line2).append("\n");
+                }
             }
+            i++;
+            j++;
         }
 
         while (i < file1Lines.size()) {
@@ -125,7 +130,7 @@ public class TextFile implements Node {
 
         String outputStr = output.toString();
         TextFile mergedFile = new TextFile();
-        mergedFile.content = String.valueOf(Files.readAllLines(Paths.get(outputStr)));
+        mergedFile.content = outputStr;
         return mergedFile;
     }
 }
