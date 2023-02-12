@@ -112,4 +112,24 @@ public class Commit implements JGitObject {
         this.state.restore("");
 
     }
+
+    /**
+     * Create a new branch if not exist
+     * @param branchName - name of the branch to create
+     * @param commitHash - commit hash of the branch
+     * @throws IOException
+     */
+    public static void createBranch(String branchName, String commitHash) throws IOException {
+        // Create a new file in .git/refs/heads with the given branch name
+        File branchFile = new File(".git/refs/heads/" + branchName);
+        if (branchFile.exists()) {
+            System.out.println("fatal: A branch named '" + branchName + "' already exists.");
+        } else {
+            FileWriter myWriter = new FileWriter(branchFile);
+            myWriter.write(commitHash);
+            myWriter.close();
+
+            System.out.println("Branch " + branchName + " created with head at commit " + commitHash);
+        }
+    }
 }
