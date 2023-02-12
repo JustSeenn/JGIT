@@ -10,8 +10,17 @@ import java.util.Scanner;
 
 
 public class TextFile implements Node {
-    private String content;
+    public String content;
 
+    /** For dev purpose **/
+    public TextFile(String content) {
+        this.content = content;
+    }
+
+    public TextFile() {
+        this.content = "";
+    }
+    /** ------------------ */
     @Override
     public String hash() {
         StringBuilder hexString = new StringBuilder();
@@ -32,9 +41,9 @@ public class TextFile implements Node {
     @Override
     public void store() {
         try {
-            FileWriter myWriter = new FileWriter("./jgit/object/"+this.hash());
+            FileWriter myWriter = new FileWriter(".jgit\\object\\"+this.hash());
 
-            myWriter.write(this.content); // compress it ?
+            myWriter.write(this.content);
             myWriter.close();
 
         } catch (IOException e) {
@@ -47,7 +56,7 @@ public class TextFile implements Node {
     public static TextFile loadFile(String hash) {
         StringBuilder content = new StringBuilder();
         try {
-            File myObj = new File("./jgit/object/"+hash);
+            File myObj = new File(".jgit\\object\\"+hash);
             Scanner myReader = new Scanner(myObj);
             while (myReader.hasNextLine()) {
                 content.append(myReader.nextLine());
@@ -97,6 +106,7 @@ public class TextFile implements Node {
         while (i < file1Lines.size() && j < file2Lines.size()) {
             String line1 = file1Lines.get(i);
             String line2 = file2Lines.get(j);
+            System.out.println("line1: " + line1 + " line2: " + line2 + " " +line1.equals(line2));
             if (line1.equals(line2)) {
                 output.append(line1).append("\n");
 
