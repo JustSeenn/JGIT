@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.security.MessageDigest;
 import java.util.List;
 import java.util.Map;
@@ -133,7 +134,7 @@ public class Commit implements JGitObject {
      */
     public static void createBranch(String branchName, String commitHash) throws IOException {
         // Create a new file in .git/refs/heads with the given branch name
-        File branchFile = new File(".git/refs/heads/" + branchName);
+        File branchFile = new File(Paths.get(".jgit", "refs", "heads", branchName).toString());
         if (branchFile.exists()) {
             System.out.println("fatal: A branch named '" + branchName + "' already exists.");
         } else {

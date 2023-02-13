@@ -30,8 +30,9 @@ public class TextFile implements Node {
     @Override
     public void store() {
         try {
-            File myObj = new File(".git/object/"+ this.hash());
-            FileWriter myWriter = new FileWriter(".git/object/"+ this.hash());
+            String filePath = Paths.get(".jgit", "object", this.hash()).toString();
+            File myObj = new File(filePath);
+            FileWriter myWriter = new FileWriter(filePath);
 
             if (myObj.createNewFile()) {
                 System.out.println("File created: " + myObj.getName());
@@ -51,7 +52,8 @@ public class TextFile implements Node {
     public static TextFile loadFile(String hash) {
         StringBuilder content = new StringBuilder();
         try {
-            File myObj = new File(".git/object/"+hash);
+            String filePath = Paths.get(".jgit", "object", hash).toString();
+            File myObj = new File(filePath);
             Scanner myReader = new Scanner(myObj);
             while (myReader.hasNextLine()) {
                 content.append(myReader.nextLine());
