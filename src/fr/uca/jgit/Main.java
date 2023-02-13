@@ -1,5 +1,4 @@
 package fr.uca.jgit;
-
 import fr.uca.jgit.model.Commit;
 import fr.uca.jgit.model.Folder;
 import fr.uca.jgit.model.TextFile;
@@ -11,6 +10,11 @@ import java.nio.file.Paths;
 public class Main {
 
     public static void main(String[] args) throws IOException {
+        try {
+            Folder.initJGit();
+        } catch (Exception e) {
+            System.out.println(e.toString());
+        }
         mergeDemo();
     }
 
