@@ -1,5 +1,4 @@
 package fr.uca.jgit;
-
 import fr.uca.jgit.controller.RepositoryController;
 import fr.uca.jgit.model.Commit;
 import fr.uca.jgit.model.Folder;
@@ -10,6 +9,11 @@ import java.io.IOException;
 public class Main {
 
     public static void main(String[] args) throws IOException {
+        try {
+            Folder.initJGit();
+        } catch (Exception e) {
+            System.out.println(e.toString());
+        }
         mergeDemo();
         //demoCommit();
 
