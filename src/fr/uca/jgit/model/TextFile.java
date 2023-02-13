@@ -8,6 +8,9 @@ import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.Scanner;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
 
 public class TextFile implements Node {
     public String content;
@@ -41,7 +44,8 @@ public class TextFile implements Node {
     @Override
     public void store() {
         try {
-            FileWriter myWriter = new FileWriter(".jgit\\object\\"+this.hash());
+            Path filePath = Paths.get(".jgit", "object", this.hash());
+            FileWriter myWriter = new FileWriter(filePath.toString());
 
             myWriter.write(this.content);
             myWriter.close();
@@ -56,7 +60,9 @@ public class TextFile implements Node {
     public static TextFile loadFile(String hash) {
         StringBuilder content = new StringBuilder();
         try {
-            File myObj = new File(".jgit\\object\\"+hash);
+            Path filePath = Paths.get(".jgit", "object", hash);
+
+            File myObj = new File(filePath.toString());
             Scanner myReader = new Scanner(myObj);
             while (myReader.hasNextLine()) {
                 content.append(myReader.nextLine());
