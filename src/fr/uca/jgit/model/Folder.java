@@ -40,8 +40,6 @@ public class Folder implements Node {
         return hexString.toString();
     }
 
-
-
     /** Stores the corresponding object in .git directory (file .git/object/[hash]) **/
     @Override
     public void store() {
@@ -123,8 +121,19 @@ public class Folder implements Node {
             if(other instanceof Folder){
                 if(((Folder) other).children.containsKey(entry.getKey())){
                     TextFile temp = (TextFile) entry.getValue().merge(((Folder) other).children.get(entry.getKey()));
-                    newFolder.children.put(entry.getKey(), temp);
+                    if(temp.getContent().contains("<<<<<<<"))
+                        newFolder.children.put(entry.getKey() + ".cl", temp);
+                    else
+                        newFolder.children.put(entry.getKey(), temp);
+                }else {
+                    newFolder.children.put(entry.getKey(), entry.getValue());
                 }
+            }
+        }
+
+        for (Map.Entry<String, Node> entry : ((Folder) other).children.entrySet()) {
+            if(!newFolder.children.containsKey(entry.getKey())){
+                newFolder.children.put(entry.getKey(), entry.getValue());
             }
         }
         return newFolder;
