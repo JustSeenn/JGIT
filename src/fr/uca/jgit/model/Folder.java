@@ -30,12 +30,13 @@ public class Folder implements Node {
         return hexString.toString();
     }
 
-    /** Stores the corresponding object in .git directory (file .git/object/[hash]) **/
+    /** Stores the corresponding object in .git directory (file .jgit/object/[hash]) **/
     @Override
     public void store() {
         try {
-            File myObj = new File(".git/object/"+ this.hash());
-            FileWriter myWriter = new FileWriter(".git/object/"+ this.hash());
+            String filePath = Paths.get(".jgit", "object", this.hash()).toString();
+            File myObj = new File(filePath);
+            FileWriter myWriter = new FileWriter(filePath);
 
             if (myObj.createNewFile()) {
                 System.out.println("File created: " + myObj.getName());
@@ -65,12 +66,13 @@ public class Folder implements Node {
         return str.toString();
     }
 
-    /** Loads the folder corresponding to the given hash (from file .git/object/[hash]). **/
+    /** Loads the folder corresponding to the given hash (from file .jgit/object/[hash]). **/
     public static Folder loadFolder(String hash) {
 
             Folder newFolder = new Folder();
             try {
-                File myObj = new File(".git/object/"+hash);
+                String filePath = Paths.get(".jgit", "object", hash).toString();
+                File myObj = new File(filePath);
                 Scanner myReader = new Scanner(myObj);
                 while (myReader.hasNextLine()) {
                     String[] line = myReader.nextLine().split(";");
@@ -110,8 +112,10 @@ public class Folder implements Node {
      * @param branchName - name of the branch to check out
      */
     public void changeBranch(String branchName) throws IOException {
+        String filePath = Paths.get(".jgit", "refs", "heads", branchName).toString();
+
         // Check if the branch exists
-        File branchFile = new File(".git/refs/heads/" + branchName);
+        File branchFile = new File(filePath);
         if (!branchFile.exists()) {
             System.out.println("Branch " + branchName + " does not exist");
             return ;

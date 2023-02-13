@@ -1,6 +1,7 @@
 package fr.uca.jgit.model;
 
 import java.io.*;
+import java.nio.file.Paths;
 import java.security.MessageDigest;
 import java.util.Scanner;
 import java.util.zip.GZIPInputStream;
@@ -93,7 +94,7 @@ public class TextFile implements Node {
      */
     public void changeBranch(String branchName) throws IOException {
         // Check if the branch exists
-        File branchFile = new File(".git/refs/heads/" + branchName);
+        File branchFile = new File(Paths.get(".jgit", "refs", "heads", branchName).toString());
         if (!branchFile.exists()) {
             System.out.println("Branch " + branchName + " does not exist");
             return ;
