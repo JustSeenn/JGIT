@@ -1,5 +1,7 @@
 package fr.uca.jgit.model;
 
+import fr.uca.jgit.controller.RepositoryController;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
@@ -28,6 +30,10 @@ public class Commit implements JGitObject {
     }
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public Folder getState() {
+        return state;
     }
 
     public List<Commit> getParents() {
@@ -158,31 +164,12 @@ public class Commit implements JGitObject {
         newCommit.state = (Folder) state.merge((other).state);
         newCommit.parents.add(this);
         newCommit.parents.add(other);
-
-        // Store the new commit
-        newCommit.store();
-
-        // Update the file .jgit/HEAD
-        Path filePath = Paths.get(".jgit", "HEAD");
-
-        StringBuilder content = new StringBuilder();
-        for (Commit c : newCommit.parents) {
-            content.append(c.hash()).append(";");
-        }
-        if(content.length() > 0)
-            content.deleteCharAt(content.length()-1);
-        content.append("\n");
-        content.append(LocalTime.now().toString()).append("-").append(LocalDate.now()).append("\n");
-        content.append(newCommit.hash());
-
-        try {
-            Files.write(filePath, content.toString().getBytes(), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
-        } catch (IOException e) {
-            System.out.println("An error occurred while writing to file.");
-            e.printStackTrace();
-        }
+        newCommit.setDescription("Merge commit between " + this.hash() + " and " + other.hash());
+        RepositoryController.commit(newCommit);
 
 
         return newCommit;
     }
+
+
 }

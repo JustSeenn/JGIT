@@ -11,7 +11,7 @@ public class Main {
 
     public static void main(String[] args) throws IOException {
         mergeDemo();
-        demoCommit();
+        //demoCommit();
 
     }
     public static void demoCommit() {
@@ -41,14 +41,18 @@ public class Main {
 
         Commit commit1 = new Commit();
         commit1.setState(folder1);
+        commit1.setDescription("First commit");
         commit1.store();
+
 
         Commit commit2 = new Commit();
         commit2.setState(folder2);
+        commit2.setDescription("Second commit");
         commit2.store();
 
 
         Commit c = commit1.merge(commit2);
+
         Folder newState = c.getState();
         newState.restore(".\\result");
     }
