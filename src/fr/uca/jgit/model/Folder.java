@@ -8,6 +8,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.MessageDigest;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
 
@@ -85,7 +86,15 @@ public class Folder implements Node {
                 e.printStackTrace();
             }
             return newFolder;
+    }
 
+    public static Folder initJGit() {
+        Folder jgit = new Folder();
+        jgit.children = new HashMap<>();
+        jgit.children.put("logs", new Folder());
+        jgit.children.put("objects", new Folder());
+        //create first commti HEAD
+        return jgit;
     }
 
     /** Restores the file node at the given path. **/

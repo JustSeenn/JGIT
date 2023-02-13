@@ -73,7 +73,7 @@ public class Commit implements JGitObject {
 
         Commit newCommit = new Commit();
         try {
-            File myObj = new File(".git/logs/"+hash);
+            File myObj = new File(".jgit/logs/"+hash);
             Scanner myReader = new Scanner(myObj);
 
             String[] sParents = myReader.nextLine().split(";");
