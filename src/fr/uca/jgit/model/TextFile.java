@@ -13,7 +13,7 @@ import java.nio.file.Paths;
 
 
 public class TextFile implements Node {
-    public String content;
+    private String content;
 
     /** For dev purpose **/
     public TextFile(String content) {
@@ -23,7 +23,11 @@ public class TextFile implements Node {
     public TextFile() {
         this.content = "";
     }
-    /** ------------------ */
+
+    public String getContent(){
+        return this.content;
+    }
+
     @Override
     public String hash() {
         StringBuilder hexString = new StringBuilder();
@@ -112,35 +116,30 @@ public class TextFile implements Node {
         while (i < file1Lines.size() && j < file2Lines.size()) {
             String line1 = file1Lines.get(i);
             String line2 = file2Lines.get(j);
-            System.out.println("line1: " + line1 + " line2: " + line2 + " " +line1.equals(line2));
             if (line1.equals(line2)) {
                 output.append(line1).append("\n");
-
             } else {
-                System.out.println("Conflict detected at the line " + (i + 1) + ": ");
-                System.out.println("Version 1: " + line1);
-                System.out.println("Version 2: " + line2);
-                System.out.println("Choose if you want the version (1 or 2):");
-                Scanner scanner = new Scanner(System.in);
-                int choice = scanner.nextInt();
-                if (choice == 1) {
-                    output.append(line1).append("\n");
-
-                } else {
-                    output.append(line2).append("\n");
-                }
+                output.append("<<<<<<<").append(" local").append("\n");
+                output.append(line1).append("\n");
+                output.append("=======\n");
+                output.append(line2).append("\n");
+                output.append(">>>>>>>").append(" remote").append("\n");
             }
             i++;
             j++;
         }
 
         while (i < file1Lines.size()) {
+            output.append("<<<<<<<").append(" local").append("\n");
             output.append(file1Lines.get(i)).append("\n");
+            output.append(">>>>>>>").append(" remote").append("\n");
             i++;
         }
 
         while (j < file2Lines.size()) {
+            output.append("<<<<<<<").append(" local").append("\n");
             output.append(file2Lines.get(j)).append("\n");
+            output.append(">>>>>>>").append(" remote").append("\n");
             j++;
         }
 

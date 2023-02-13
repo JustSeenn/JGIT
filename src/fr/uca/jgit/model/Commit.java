@@ -4,14 +4,34 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.security.MessageDigest;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
+
 import java.util.Scanner;
 
 public class Commit implements JGitObject {
-    private List<Commit> parents;
+    private final List<Commit> parents;
     private Folder state;
+
+    public Commit(){
+        this.parents = new ArrayList<>();
+        this.state = null;
+    }
+
+    public void setState(Folder state){
+        this.state = state;
+    }
+
+    public Folder getState(){
+        return this.state;
+    }
 
     @Override
     public String hash() {
@@ -37,11 +57,12 @@ public class Commit implements JGitObject {
 
     /** Stores the corresponding object in .git directory (to file .git/logs/[hash]). **/
     @Override
-    public void store() { // How to get the message of the commit ?
+    public void store() {
         try {
+            Path filePath = Paths.get(".jgit", "logs", this.hash());
             StringBuilder content = new StringBuilder();
-            File myObj = new File(".git/logs/"+ this.hash());
-            FileWriter myWriter = new FileWriter(".git/logs/"+ this.hash());
+            File myObj = new File(filePath.toString());
+            FileWriter myWriter = new FileWriter(filePath.toString());
 
             if (myObj.createNewFile()) {
                 System.out.println("File created: " + myObj.getName());
@@ -51,7 +72,8 @@ public class Commit implements JGitObject {
             for(Commit c : parents){
                 content.append(c.hash()).append(";");
             }
-            content.deleteCharAt(content.length()-1);
+            if (content.length() > 0)
+                content.deleteCharAt(content.length()-1);
             content.append("\n");
             content.append(" ").append(java.time.LocalTime.now()).append("-").append(java.time.LocalDate.now()).append("\n");
             // append commit message ?
@@ -113,11 +135,49 @@ public class Commit implements JGitObject {
 
     }
 
-    Commit merge(Commit other) throws IOException {
+    public Commit merge(Commit other) throws IOException {
+        // Check if there is a .cl file in the working directory
+        File workingDirectory = new File(".");
+        File[] files = workingDirectory.listFiles();
+        if( files != null){
+            for (File file : files) {
+                if (file.isFile()) {
+                    if (file.getName().equals(".cl")) {
+                        System.out.println("There is a .cl file in the working directory. Please resolve the conflicts before merging.");
+                        return null;
+                    }
+                }
+            }
+        }
         Commit newCommit = new Commit();
-        newCommit.state = (Folder) state.merge(((Commit) other).state);
+        newCommit.state = (Folder) state.merge((other).state);
         newCommit.parents.add(this);
-        newCommit.parents.add((Commit) other);
+        newCommit.parents.add(other);
+
+        // Store the new commit
+        newCommit.store();
+
+        // Update the file .jgit/HEAD
+        Path filePath = Paths.get(".jgit", "HEAD");
+
+        StringBuilder content = new StringBuilder();
+        for (Commit c : newCommit.parents) {
+            content.append(c.hash()).append(";");
+        }
+        if(content.length() > 0)
+            content.deleteCharAt(content.length()-1);
+        content.append("\n");
+        content.append(LocalTime.now().toString()).append("-").append(LocalDate.now()).append("\n");
+        content.append(newCommit.hash());
+
+        try {
+            Files.write(filePath, content.toString().getBytes(), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+        } catch (IOException e) {
+            System.out.println("An error occurred while writing to file.");
+            e.printStackTrace();
+        }
+
+
         return newCommit;
     }
 }
