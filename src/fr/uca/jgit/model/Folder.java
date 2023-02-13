@@ -88,14 +88,20 @@ public class Folder implements Node {
             return newFolder;
     }
 
-    public static Folder initJGit() {
-        Folder jgit = new Folder();
-        jgit.children = new HashMap<>();
-        jgit.children.put(".jgit", new Folder());
-        jgit.children.put(Paths.get(".jgit", "logs", "logs").toString(), new Folder());
-        jgit.children.put(Paths.get(".jgit", "objects", "objects").toString(), new Folder());
-        //first commit HEAD
-        return jgit;
+    public static void initJGit() {
+        try {
+            Path newPath = Paths.get(".jgit");
+            Files.createDirectories(newPath);
+            newPath = Paths.get(".jgit", "object");
+            Files.createDirectories(newPath);
+            newPath = Paths.get(".jgit", "logs");
+            Files.createDirectories(newPath);
+            newPath = Paths.get(".jgit", "HEAD");
+            Files.createFile(newPath);
+            System.out.println("Directories are created!");
+        } catch (IOException e) {
+            System.err.println("Failed to create directories!" + e.getMessage());
+        }
     }
 
     /** Restores the file node at the given path. **/
