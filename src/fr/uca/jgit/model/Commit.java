@@ -111,7 +111,9 @@ public class Commit implements JGitObject {
 
             String[] sParents = myReader.nextLine().split(";");
             for(String s: sParents){
-                newCommit.parents.add(Commit.loadCommit(s));
+                if (!s.isEmpty()) {
+                    newCommit.parents.add(Commit.loadCommit(s));
+                }
             }
             String temp = "";
             while(myReader.hasNextLine()){
