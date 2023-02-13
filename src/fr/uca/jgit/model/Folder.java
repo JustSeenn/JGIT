@@ -8,13 +8,20 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.MessageDigest;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
 
 public class Folder implements Node {
     // Mapping Name -> Node
-    private Map<String, Node> children;
+    private final Map<String, Node> children;
 
+    public Folder(){
+        children = new HashMap<>();
+    }
+    public void add(String name, Node node){
+        this.children.put(name, node);
+    }
     @Override
     public String hash() {
         StringBuilder hexString = new StringBuilder();
@@ -32,6 +39,8 @@ public class Folder implements Node {
         }
         return hexString.toString();
     }
+
+
 
     /** Stores the corresponding object in .git directory (file .git/object/[hash]) **/
     @Override

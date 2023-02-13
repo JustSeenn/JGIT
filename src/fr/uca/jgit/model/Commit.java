@@ -4,14 +4,35 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.security.MessageDigest;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
 public class Commit implements JGitObject {
-    private List<Commit> parents;
+    private final List<Commit> parents;
     private Folder state;
+    private String description;
+
+    public Commit() {
+        this.parents = new ArrayList<>();
+        this.state = null;
+        this.description = "";
+    }
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public List<Commit> getParents() {
+        return parents;
+    }
+
+    public void setState(Folder folder1) {
+        this.state = folder1;
+    }
 
     @Override
     public String hash() {
@@ -37,24 +58,24 @@ public class Commit implements JGitObject {
 
     /** Stores the corresponding object in .git directory (to file .git/logs/[hash]). **/
     @Override
-    public void store() { // How to get the message of the commit ?
+    public void store() {
         try {
             StringBuilder content = new StringBuilder();
-            File myObj = new File(".git/logs/"+ this.hash());
-            FileWriter myWriter = new FileWriter(".git/logs/"+ this.hash());
+            Path filePath = Paths.get(".jgit", "logs", this.hash());
+            File myObj = new File(filePath.toString());
+            FileWriter myWriter = new FileWriter(filePath.toString());
 
             if (myObj.createNewFile()) {
                 System.out.println("File created: " + myObj.getName());
-            } else {
-                System.out.println("File already exists.");
             }
             for(Commit c : parents){
                 content.append(c.hash()).append(";");
             }
-            content.deleteCharAt(content.length()-1);
+            if(content.length() > 0)
+                content.deleteCharAt(content.length()-1);
             content.append("\n");
             content.append(" ").append(java.time.LocalTime.now()).append("-").append(java.time.LocalDate.now()).append("\n");
-            // append commit message ?
+            content.append(this.description).append("\n");
             content.append(state.hash());
 
             myWriter.write(content.toString());
@@ -73,7 +94,9 @@ public class Commit implements JGitObject {
 
         Commit newCommit = new Commit();
         try {
-            File myObj = new File(".git/logs/"+hash);
+            Path filePath = Paths.get(".jgit", "logs", hash);
+            File myObj = new File(filePath.toString());
+
             Scanner myReader = new Scanner(myObj);
 
             String[] sParents = myReader.nextLine().split(";");
@@ -115,9 +138,11 @@ public class Commit implements JGitObject {
 
     Commit merge(Commit other) throws IOException {
         Commit newCommit = new Commit();
-        newCommit.state = (Folder) state.merge(((Commit) other).state);
+        newCommit.state = (Folder) state.merge(other.state);
         newCommit.parents.add(this);
-        newCommit.parents.add((Commit) other);
+        newCommit.parents.add(other);
         return newCommit;
     }
+
+
 }
