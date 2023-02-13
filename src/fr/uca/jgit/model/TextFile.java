@@ -10,6 +10,13 @@ import java.util.zip.GZIPOutputStream;
 public class TextFile implements Node {
     private String content;
 
+    public TextFile() {
+
+    }
+
+    public TextFile(String content) {
+        this.content = content;
+    }
     @Override
     public String hash() {
         StringBuilder hexString = new StringBuilder();
@@ -110,5 +117,13 @@ public class TextFile implements Node {
         // Load the commit with the given hash
         this.content = loadFile(hash).content;
         System.out.println("Switched to a new branch " + branchName);
+    }
+
+    public String getContent(){
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
     }
 }
