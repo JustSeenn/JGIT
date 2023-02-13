@@ -112,4 +112,12 @@ public class Commit implements JGitObject {
         this.state.restore("");
 
     }
+
+    Commit merge(Commit other) throws IOException {
+        Commit newCommit = new Commit();
+        newCommit.state = (Folder) state.merge(((Commit) other).state);
+        newCommit.parents.add(this);
+        newCommit.parents.add((Commit) other);
+        return newCommit;
+    }
 }

@@ -106,4 +106,19 @@ public class Folder implements Node {
 
         }
     }
+
+    @Override
+    public Node merge(Node other) throws IOException {
+        Folder newFolder = new Folder();
+        for (Map.Entry<String, Node> entry : children.entrySet()) {
+            if(other instanceof Folder){
+                if(((Folder) other).children.containsKey(entry.getKey())){
+                    TextFile temp = (TextFile) entry.getValue().merge(((Folder) other).children.get(entry.getKey()));
+                    newFolder.children.put(entry.getKey(), temp);
+                }
+            }
+        }
+        return newFolder;
+
+    }
 }
