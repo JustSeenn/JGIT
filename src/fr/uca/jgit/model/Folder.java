@@ -91,9 +91,10 @@ public class Folder implements Node {
     public static Folder initJGit() {
         Folder jgit = new Folder();
         jgit.children = new HashMap<>();
-        jgit.children.put("logs", new Folder());
-        jgit.children.put("objects", new Folder());
-        //create first commti HEAD
+        jgit.children.put(".jgit", new Folder());
+        jgit.children.put(Paths.get(".jgit", "logs", "logs").toString(), new Folder());
+        jgit.children.put(Paths.get(".jgit", "objects", "objects").toString(), new Folder());
+        //first commit HEAD
         return jgit;
     }
 
