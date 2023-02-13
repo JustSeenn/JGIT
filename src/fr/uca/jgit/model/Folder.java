@@ -8,12 +8,20 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.MessageDigest;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
 
 public class Folder implements Node {
     // Mapping Name -> Node
-    private Map<String, Node> children;
+    private final Map<String, Node> children;
+
+    public Folder(){
+        children = new HashMap<>();
+    }
+    public void add(String name, Node node){
+        this.children.put(name, node);
+    }
 
     @Override
     public String hash() {
@@ -114,8 +122,19 @@ public class Folder implements Node {
             if(other instanceof Folder){
                 if(((Folder) other).children.containsKey(entry.getKey())){
                     TextFile temp = (TextFile) entry.getValue().merge(((Folder) other).children.get(entry.getKey()));
-                    newFolder.children.put(entry.getKey(), temp);
+                    if(temp.getContent().contains("<<<<<<<"))
+                        newFolder.children.put(entry.getKey() + ".cl", temp);
+                    else
+                        newFolder.children.put(entry.getKey(), temp);
+                }else {
+                    newFolder.children.put(entry.getKey(), entry.getValue());
                 }
+            }
+        }
+
+        for (Map.Entry<String, Node> entry : ((Folder) other).children.entrySet()) {
+            if(!newFolder.children.containsKey(entry.getKey())){
+                newFolder.children.put(entry.getKey(), entry.getValue());
             }
         }
         return newFolder;
