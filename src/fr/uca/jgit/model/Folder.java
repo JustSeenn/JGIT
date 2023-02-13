@@ -22,7 +22,6 @@ public class Folder implements Node {
     public void add(String name, Node node){
         this.children.put(name, node);
     }
-
     @Override
     public String hash() {
         StringBuilder hexString = new StringBuilder();
@@ -50,8 +49,6 @@ public class Folder implements Node {
 
             if (myObj.createNewFile()) {
                 System.out.println("File created: " + myObj.getName());
-            } else {
-                System.out.println("File already exists.");
             }
 
             myWriter.write(this.toString());
@@ -148,10 +145,14 @@ public class Folder implements Node {
         }
 
         for (Map.Entry<String, Node> entry : ((Folder) other).children.entrySet()) {
-            if(!newFolder.children.containsKey(entry.getKey())){
+            if(!newFolder.children.containsKey(entry.getKey()) && !newFolder.children.containsKey(entry.getKey() + ".cl") ){
                 newFolder.children.put(entry.getKey(), entry.getValue());
             }
+
+
         }
+
+
         return newFolder;
 
     }

@@ -90,8 +90,6 @@ public class TextFile implements Node {
 
             if (myObj.createNewFile()) {
                 System.out.println("File created: " + myObj.getName());
-            } else {
-                System.out.println("File already exists.");
             }
             myWriter.write(this.content);
             myWriter.close();
