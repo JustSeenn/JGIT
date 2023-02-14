@@ -1,9 +1,6 @@
 package fr.uca.jgit.model;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -21,6 +18,10 @@ public class Folder implements Node {
     }
     public void add(String name, Node node){
         this.children.put(name, node);
+    }
+
+    public Map<String, Node> getChildren() {
+        return children;
     }
     @Override
     public String hash() {
@@ -44,8 +45,9 @@ public class Folder implements Node {
     @Override
     public void store() {
         try {
-            File myObj = new File(".git/object/"+ this.hash());
-            FileWriter myWriter = new FileWriter(".git/object/"+ this.hash());
+            String filePath = Paths.get(".jgit", "object", this.hash()).toString();
+            File myObj = new File(filePath);
+            FileWriter myWriter = new FileWriter(filePath);
 
             if (myObj.createNewFile()) {
                 System.out.println("File created: " + myObj.getName());
@@ -78,7 +80,7 @@ public class Folder implements Node {
 
             Folder newFolder = new Folder();
             try {
-                File myObj = new File(".git/object/"+hash);
+                File myObj = new File(Paths.get(".jgit", "object", hash).toString());
                 Scanner myReader = new Scanner(myObj);
                 while (myReader.hasNextLine()) {
                     String[] line = myReader.nextLine().split(";");
@@ -118,7 +120,8 @@ public class Folder implements Node {
 
             for (Map.Entry<String, Node> entry : children.entrySet()) {
                 System.out.println(entry.getKey() + ":" + entry.getValue());
-                entry.getValue().restore(path+"/"+entry.getKey());
+
+                entry.getValue().restore(Paths.get(path, entry.getKey()).toString());
             }
         } catch (IOException e) {
 
@@ -155,5 +158,14 @@ public class Folder implements Node {
 
         return newFolder;
 
+    }
+
+    public Folder clone(){
+        Folder f = new Folder();
+        for(Map.Entry<String, Node> entry : this.children.entrySet()){
+            f.add(entry.getKey(), entry.getValue());
+        }
+
+        return f;
     }
 }

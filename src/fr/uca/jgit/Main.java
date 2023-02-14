@@ -8,15 +8,15 @@ import java.io.IOException;
 
 public class Main {
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args){
         try {
             Folder.initJGit();
         } catch (Exception e) {
-            System.out.println(e.toString());
+            System.out.println(e.getMessage());
         }
-        mergeDemo();
+        //mergeDemo();
         //demoCommit();
-
+        checkoutDemo();
     }
     public static void demoCommit() {
         TextFile file4 = new TextFile("Hello World \nThis is a test ? \nNo it's not \n ");
@@ -58,6 +58,46 @@ public class Main {
         Commit c = commit1.merge(commit2);
 
         Folder newState = c.getState();
-        newState.restore(".\\result");
+        newState.restore("result");
+    }
+
+    public static void checkoutDemo(){
+        // Branch change test
+
+
+        TextFile textFile = new TextFile("First file");
+
+        textFile.store();
+
+        Folder folder1 = new Folder();
+        folder1.add("file 1", textFile);
+        folder1.store();
+
+        Commit commit1 = new Commit();
+        commit1.setState(folder1.clone());
+        commit1.setDescription("First commit");
+        commit1.store();
+        System.out.println( "Right now " + commit1.hash());
+
+        TextFile textFile2 = new TextFile("Second file");
+        textFile2.store();
+
+        folder1.add("file 2", textFile2);
+        folder1.store();
+
+        Commit commit2 = new Commit();
+        commit2.setState(folder1.clone());
+        commit2.setDescription("Second commit");
+        commit2.addParent(commit1);
+        commit2.store();
+
+        System.out.println("Switch to branch " + commit1.hash() + " : ");
+        RepositoryController.changeBranch(commit1.hash());
+
+        System.out.println("Switch to branch " + commit2.hash() + " : ");
+        RepositoryController.changeBranch(commit2.hash());
+
+        System.out.println("Switch to branch " + commit1.hash() + " : ");
+        RepositoryController.changeBranch(commit1.hash());
     }
 }
