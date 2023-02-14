@@ -181,12 +181,6 @@ public class Folder implements Node {
         Commit commit = Commit.loadCommit(hash);
         commit.checkout();
         this.children = loadFolder(lastLine).children;
-//        this.restore(".");
-
-        // Update HEAD
-//        FileWriter headFiles = new FileWriter(Paths.get(".jgit", "HEAD").toString());
-//        headFiles.write(hash);
-//        headFiles.close();
     }
 
     public Folder clone(){
