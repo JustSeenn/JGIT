@@ -135,8 +135,8 @@ public class Commit implements JGitObject {
 
     /** Checkout the commit.
      * Removes all working directory content and restores the state of this commit.  **/
-    void checkout() {
-        File workingDirectory = new File("./result");
+    public void checkout() {
+        File workingDirectory = new File("result");
         File[] files = workingDirectory.listFiles();
         if( files != null){
             for (File file : files) {
@@ -148,7 +148,7 @@ public class Commit implements JGitObject {
             }
         }
 
-        this.state.restore("./result");
+        this.state.restore("result");
 
     }
 

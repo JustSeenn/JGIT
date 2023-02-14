@@ -8,13 +8,13 @@ import java.io.IOException;
 
 public class Main {
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args){
         try {
             Folder.initJGit();
         } catch (Exception e) {
-            System.out.println(e.toString());
+            System.out.println(e.getMessage());
         }
-        mergeDemo();
+        //mergeDemo();
         //demoCommit();
         checkoutDemo();
     }
@@ -58,10 +58,10 @@ public class Main {
         Commit c = commit1.merge(commit2);
 
         Folder newState = c.getState();
-        newState.restore(".\\result");
+        newState.restore("result");
     }
 
-    public static void checkoutDemo() throws IOException {
+    public static void checkoutDemo(){
         // Branch change test
 
 
@@ -92,12 +92,12 @@ public class Main {
         commit2.store();
 
         System.out.println("Switch to branch " + commit1.hash() + " : ");
-        folder1.changeBranch(commit1.hash());
+        RepositoryController.changeBranch(commit1.hash());
 
         System.out.println("Switch to branch " + commit2.hash() + " : ");
-        folder1.changeBranch(commit2.hash());
+        RepositoryController.changeBranch(commit2.hash());
 
         System.out.println("Switch to branch " + commit1.hash() + " : ");
-        folder1.changeBranch(commit1.hash());
+        RepositoryController.changeBranch(commit1.hash());
     }
 }

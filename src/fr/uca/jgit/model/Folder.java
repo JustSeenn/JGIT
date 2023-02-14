@@ -11,13 +11,17 @@ import java.util.Scanner;
 
 public class Folder implements Node {
     // Mapping Name -> Node
-    private Map<String, Node> children;
+    private final Map<String, Node> children;
 
     public Folder(){
         children = new HashMap<>();
     }
     public void add(String name, Node node){
         this.children.put(name, node);
+    }
+
+    public Map<String, Node> getChildren() {
+        return children;
     }
     @Override
     public String hash() {
@@ -116,7 +120,8 @@ public class Folder implements Node {
 
             for (Map.Entry<String, Node> entry : children.entrySet()) {
                 System.out.println(entry.getKey() + ":" + entry.getValue());
-                entry.getValue().restore(path+"/"+entry.getKey());
+
+                entry.getValue().restore(Paths.get(path, entry.getKey()).toString());
             }
         } catch (IOException e) {
 
@@ -153,34 +158,6 @@ public class Folder implements Node {
 
         return newFolder;
 
-    }
-
-    public void changeBranch(String hash) throws IOException {
-        // Check if the branch exists
-        File branchFile = new File(Paths.get(".jgit", "logs", hash).toString());
-        if (!branchFile.exists()) {
-            System.out.println("Branch " + hash + " does not exist");
-            return ;
-        }
-
-        // Get the hash for the state of repo
-        String lastLine = "";
-        try {
-            BufferedReader reader = new BufferedReader(new FileReader(branchFile));
-            String line;
-            while ((line = reader.readLine()) != null) {
-                lastLine = line;
-            }
-            reader.close();
-        } catch (Exception e) {
-            System.err.println("Failed to read the last line of the file.");
-            e.printStackTrace();
-        }
-
-        // Restore working directory
-        Commit commit = Commit.loadCommit(hash);
-        commit.checkout();
-        this.children = loadFolder(lastLine).children;
     }
 
     public Folder clone(){
