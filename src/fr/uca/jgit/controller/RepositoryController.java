@@ -2,7 +2,6 @@ package fr.uca.jgit.controller;
 
 import fr.uca.jgit.model.Commit;
 import fr.uca.jgit.model.Folder;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -13,8 +12,6 @@ import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.time.LocalDate;
 import java.time.LocalTime;
-
-import static fr.uca.jgit.model.Folder.loadFolder;
 
 public class RepositoryController {
     public static void commit(Commit c1){
@@ -67,5 +64,30 @@ public class RepositoryController {
         commit.setState(Folder.loadFolder(lastLine));
         commit.checkout();
 
+    }
+
+    public static Commit merge(Commit c1, Commit c2) throws IOException {
+        // Check if there is a .cl file in the working directory
+        File workingDirectory = new File(".");
+        File[] files = workingDirectory.listFiles();
+        if( files != null){
+            for (File file : files) {
+                if (file.isFile()) {
+                    if (file.getName().equals(".cl")) {
+                        System.out.println("There is a .cl file in the working directory. Please resolve the conflicts before merging.");
+                        return null;
+                    }
+                }
+            }
+        }
+        Commit newCommit = new Commit();
+        newCommit.setState((Folder) c1.getState().merge(c2.getState()));
+        newCommit.addParent(c1);
+        newCommit.addParent(c2);
+        newCommit.setDescription("Merge commit between " + c1.hash() + " and " + c2.hash());
+        RepositoryController.commit(newCommit);
+
+
+        return newCommit;
     }
 }

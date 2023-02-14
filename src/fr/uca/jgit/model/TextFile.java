@@ -5,6 +5,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
@@ -103,47 +104,64 @@ public class TextFile implements Node {
     /** Merges the given file with this file. **/
     @Override
     public Node merge(Node other) {
+        TextFile mergeFile = new TextFile();
         TextFile otherFile = (TextFile) other;
         List<String> file1Lines = List.of(this.content.split("\n"));
         List<String> file2Lines = List.of(otherFile.content.split("\n"));
-        StringBuilder output = new StringBuilder();
+        List<String> ls = mergeFiles(file1Lines, file2Lines);
+        for(String s: ls){
+            mergeFile.content += s + "\n";
+        }
+        return mergeFile;
+    }
 
-        int i = 0;
-        int j = 0;
-
-        while (i < file1Lines.size() && j < file2Lines.size()) {
-            String line1 = file1Lines.get(i);
-            String line2 = file2Lines.get(j);
-            if (line1.equals(line2)) {
-                output.append(line1).append("\n");
-            } else {
-                output.append("<<<<<<<").append(" local").append("\n");
-                output.append(line1).append("\n");
-                output.append("=======\n");
-                output.append(line2).append("\n");
-                output.append(">>>>>>>").append(" remote").append("\n");
+    public static List<String> mergeFiles(List<String> file1, List<String> file2) {
+        List<String> merged = new ArrayList<>();
+        int[][] dp = new int[file1.size() + 1][file2.size() + 1];
+        for (int i = 0; i <= file1.size(); i++) {
+            dp[i][0] = i;
+        }
+        for (int j = 0; j <= file2.size(); j++) {
+            dp[0][j] = j;
+        }
+        for (int i = 1; i <= file1.size(); i++) {
+            for (int j = 1; j <= file2.size(); j++) {
+                if (file1.get(i - 1).equals(file2.get(j - 1))) {
+                    dp[i][j] = dp[i - 1][j - 1];
+                } else {
+                    dp[i][j] = Math.min(dp[i - 1][j], dp[i][j - 1]) + 1;
+                }
             }
-            i++;
-            j++;
         }
-
-        while (i < file1Lines.size()) {
-            output.append("<<<<<<<").append(" local").append("\n");
-            output.append(file1Lines.get(i)).append("\n");
-            output.append(">>>>>>>").append(" remote").append("\n");
-            i++;
+        int i = file1.size();
+        int j = file2.size();
+        while (i > 0 || j > 0) {
+            if (i > 0 && j > 0 && file1.get(i - 1).equals(file2.get(j - 1))) {
+                merged.add(0, file1.get(i - 1));
+                i--;
+                j--;
+            } else if (i > 0 && dp[i][j] == dp[i - 1][j] + 1) {
+                merged.add(0, "<<<<<<< HEAD");
+                merged.add(0, file1.get(i - 1));
+                merged.add(0, "=======");
+                i--;
+            } else {
+                merged.add(0, file2.get(j - 1));
+                j--;
+            }
         }
-
-        while (j < file2Lines.size()) {
-            output.append("<<<<<<<").append(" local").append("\n");
-            output.append(file2Lines.get(j)).append("\n");
-            output.append(">>>>>>>").append(" remote").append("\n");
-            j++;
+        while (i > 0) {
+            merged.add(0, "<<<<<<< HEAD");
+            merged.add(0, file1.get(i - 1));
+            merged.add(0, "=======");
+            i--;
         }
-
-        String outputStr = output.toString();
-        TextFile mergedFile = new TextFile();
-        mergedFile.content = outputStr;
-        return mergedFile;
+        while (j > 0) {
+            merged.add(0, "<<<<<<< HEAD");
+            merged.add(0, file2.get(j - 1));
+            merged.add(0, "=======");
+            j--;
+        }
+        return merged;
     }
 }

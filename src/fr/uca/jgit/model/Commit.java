@@ -152,30 +152,7 @@ public class Commit implements JGitObject {
 
     }
 
-    public Commit merge(Commit other) throws IOException {
-        // Check if there is a .cl file in the working directory
-        File workingDirectory = new File(".");
-        File[] files = workingDirectory.listFiles();
-        if( files != null){
-            for (File file : files) {
-                if (file.isFile()) {
-                    if (file.getName().equals(".cl")) {
-                        System.out.println("There is a .cl file in the working directory. Please resolve the conflicts before merging.");
-                        return null;
-                    }
-                }
-            }
-        }
-        Commit newCommit = new Commit();
-        newCommit.state = (Folder) state.merge((other).state);
-        newCommit.parents.add(this);
-        newCommit.parents.add(other);
-        newCommit.setDescription("Merge commit between " + this.hash() + " and " + other.hash());
-        RepositoryController.commit(newCommit);
 
-
-        return newCommit;
-    }
 
 
 }
