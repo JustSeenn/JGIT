@@ -1,17 +1,48 @@
 package fr.uca.jgit.model;
 
+import fr.uca.jgit.controller.RepositoryController;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.security.MessageDigest;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
+
 import java.util.Scanner;
 
 public class Commit implements JGitObject {
-    private List<Commit> parents;
+    private final List<Commit> parents;
     private Folder state;
+    private String description;
+
+    public Commit() {
+        this.parents = new ArrayList<>();
+        this.state = null;
+        this.description = "";
+    }
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public Folder getState() {
+        return state;
+    }
+
+    public List<Commit> getParents() {
+        return parents;
+    }
+
+    public void setState(Folder folder1) {
+        this.state = folder1;
+    }
 
     @Override
     public String hash() {
@@ -37,24 +68,24 @@ public class Commit implements JGitObject {
 
     /** Stores the corresponding object in .git directory (to file .git/logs/[hash]). **/
     @Override
-    public void store() { // How to get the message of the commit ?
+    public void store() {
         try {
+            Path filePath = Paths.get(".jgit", "logs", this.hash());
             StringBuilder content = new StringBuilder();
-            File myObj = new File(".git/logs/"+ this.hash());
-            FileWriter myWriter = new FileWriter(".git/logs/"+ this.hash());
+            File myObj = new File(filePath.toString());
+            FileWriter myWriter = new FileWriter(filePath.toString());
 
             if (myObj.createNewFile()) {
                 System.out.println("File created: " + myObj.getName());
-            } else {
-                System.out.println("File already exists.");
             }
             for(Commit c : parents){
                 content.append(c.hash()).append(";");
             }
-            content.deleteCharAt(content.length()-1);
+            if(content.length() > 0)
+                content.deleteCharAt(content.length()-1);
             content.append("\n");
             content.append(" ").append(java.time.LocalTime.now()).append("-").append(java.time.LocalDate.now()).append("\n");
-            // append commit message ?
+            content.append(this.description).append("\n");
             content.append(state.hash());
 
             myWriter.write(content.toString());
@@ -73,7 +104,9 @@ public class Commit implements JGitObject {
 
         Commit newCommit = new Commit();
         try {
-            File myObj = new File(".git/logs/"+hash);
+            Path filePath = Paths.get(".jgit", "logs", hash);
+            File myObj = new File(filePath.toString());
+
             Scanner myReader = new Scanner(myObj);
 
             String[] sParents = myReader.nextLine().split(";");
@@ -112,4 +145,31 @@ public class Commit implements JGitObject {
         this.state.restore("");
 
     }
+
+    public Commit merge(Commit other) throws IOException {
+        // Check if there is a .cl file in the working directory
+        File workingDirectory = new File(".");
+        File[] files = workingDirectory.listFiles();
+        if( files != null){
+            for (File file : files) {
+                if (file.isFile()) {
+                    if (file.getName().equals(".cl")) {
+                        System.out.println("There is a .cl file in the working directory. Please resolve the conflicts before merging.");
+                        return null;
+                    }
+                }
+            }
+        }
+        Commit newCommit = new Commit();
+        newCommit.state = (Folder) state.merge((other).state);
+        newCommit.parents.add(this);
+        newCommit.parents.add(other);
+        newCommit.setDescription("Merge commit between " + this.hash() + " and " + other.hash());
+        RepositoryController.commit(newCommit);
+
+
+        return newCommit;
+    }
+
+
 }

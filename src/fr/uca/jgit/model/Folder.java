@@ -8,13 +8,20 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.MessageDigest;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
 
 public class Folder implements Node {
     // Mapping Name -> Node
-    private Map<String, Node> children;
+    private final Map<String, Node> children;
 
+    public Folder(){
+        children = new HashMap<>();
+    }
+    public void add(String name, Node node){
+        this.children.put(name, node);
+    }
     @Override
     public String hash() {
         StringBuilder hexString = new StringBuilder();
@@ -42,8 +49,6 @@ public class Folder implements Node {
 
             if (myObj.createNewFile()) {
                 System.out.println("File created: " + myObj.getName());
-            } else {
-                System.out.println("File already exists.");
             }
 
             myWriter.write(this.toString());
@@ -85,7 +90,22 @@ public class Folder implements Node {
                 e.printStackTrace();
             }
             return newFolder;
+    }
 
+    public static void initJGit() {
+        try {
+            Path newPath = Paths.get(".jgit");
+            Files.createDirectories(newPath);
+            newPath = Paths.get(".jgit", "object");
+            Files.createDirectories(newPath);
+            newPath = Paths.get(".jgit", "logs");
+            Files.createDirectories(newPath);
+            newPath = Paths.get(".jgit", "HEAD");
+            Files.createFile(newPath);
+            System.out.println("Directories are created!");
+        } catch (IOException e) {
+            System.err.println("Failed to create directories!" + e.getMessage());
+        }
     }
 
     /** Restores the file node at the given path. **/
@@ -105,5 +125,35 @@ public class Folder implements Node {
             System.err.println("Failed to create directory!" + e.getMessage());
 
         }
+    }
+
+    @Override
+    public Node merge(Node other) throws IOException {
+        Folder newFolder = new Folder();
+        for (Map.Entry<String, Node> entry : children.entrySet()) {
+            if(other instanceof Folder){
+                if(((Folder) other).children.containsKey(entry.getKey())){
+                    TextFile temp = (TextFile) entry.getValue().merge(((Folder) other).children.get(entry.getKey()));
+                    if(temp.getContent().contains("<<<<<<<"))
+                        newFolder.children.put(entry.getKey() + ".cl", temp);
+                    else
+                        newFolder.children.put(entry.getKey(), temp);
+                }else {
+                    newFolder.children.put(entry.getKey(), entry.getValue());
+                }
+            }
+        }
+
+        for (Map.Entry<String, Node> entry : ((Folder) other).children.entrySet()) {
+            if(!newFolder.children.containsKey(entry.getKey()) && !newFolder.children.containsKey(entry.getKey() + ".cl") ){
+                newFolder.children.put(entry.getKey(), entry.getValue());
+            }
+
+
+        }
+
+
+        return newFolder;
+
     }
 }
