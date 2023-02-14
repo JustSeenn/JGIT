@@ -1,9 +1,6 @@
 package fr.uca.jgit.model;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -14,7 +11,7 @@ import java.util.Scanner;
 
 public class Folder implements Node {
     // Mapping Name -> Node
-    private final Map<String, Node> children;
+    private Map<String, Node> children;
 
     public Folder(){
         children = new HashMap<>();
@@ -44,8 +41,9 @@ public class Folder implements Node {
     @Override
     public void store() {
         try {
-            File myObj = new File(".git/object/"+ this.hash());
-            FileWriter myWriter = new FileWriter(".git/object/"+ this.hash());
+            String filePath = Paths.get(".jgit", "object", this.hash()).toString();
+            File myObj = new File(filePath);
+            FileWriter myWriter = new FileWriter(filePath);
 
             if (myObj.createNewFile()) {
                 System.out.println("File created: " + myObj.getName());
@@ -78,7 +76,7 @@ public class Folder implements Node {
 
             Folder newFolder = new Folder();
             try {
-                File myObj = new File(".git/object/"+hash);
+                File myObj = new File(Paths.get(".jgit", "object", hash).toString());
                 Scanner myReader = new Scanner(myObj);
                 while (myReader.hasNextLine()) {
                     String[] line = myReader.nextLine().split(";");
@@ -155,5 +153,48 @@ public class Folder implements Node {
 
         return newFolder;
 
+    }
+
+    public void changeBranch(String hash) throws IOException {
+        // Check if the branch exists
+        File branchFile = new File(Paths.get(".jgit", "logs", hash).toString());
+        if (!branchFile.exists()) {
+            System.out.println("Branch " + hash + " does not exist");
+            return ;
+        }
+
+        // Get the hash for the state of repo
+        String lastLine = "";
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader(branchFile));
+            String line;
+            while ((line = reader.readLine()) != null) {
+                lastLine = line;
+            }
+            reader.close();
+        } catch (Exception e) {
+            System.err.println("Failed to read the last line of the file.");
+            e.printStackTrace();
+        }
+
+        // Restore working directory
+        Commit commit = Commit.loadCommit(hash);
+        commit.checkout();
+        this.children = loadFolder(lastLine).children;
+//        this.restore(".");
+
+        // Update HEAD
+//        FileWriter headFiles = new FileWriter(Paths.get(".jgit", "HEAD").toString());
+//        headFiles.write(hash);
+//        headFiles.close();
+    }
+
+    public Folder clone(){
+        Folder f = new Folder();
+        for(Map.Entry<String, Node> entry : this.children.entrySet()){
+            f.add(entry.getKey(), entry.getValue());
+        }
+
+        return f;
     }
 }

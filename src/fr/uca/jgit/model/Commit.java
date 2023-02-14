@@ -40,6 +40,10 @@ public class Commit implements JGitObject {
         return parents;
     }
 
+    public void addParent(Commit parent) {
+        this.parents.add(parent);
+    }
+
     public void setState(Folder folder1) {
         this.state = folder1;
     }
@@ -132,7 +136,7 @@ public class Commit implements JGitObject {
     /** Checkout the commit.
      * Removes all working directory content and restores the state of this commit.  **/
     void checkout() {
-        File workingDirectory = new File(".");
+        File workingDirectory = new File("./result");
         File[] files = workingDirectory.listFiles();
         if( files != null){
             for (File file : files) {
@@ -144,7 +148,7 @@ public class Commit implements JGitObject {
             }
         }
 
-        this.state.restore("");
+        this.state.restore("./result");
 
     }
 

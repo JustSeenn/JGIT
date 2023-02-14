@@ -16,7 +16,7 @@ public class Main {
         }
         mergeDemo();
         //demoCommit();
-
+        checkoutDemo();
     }
     public static void demoCommit() {
         TextFile file4 = new TextFile("Hello World \nThis is a test ? \nNo it's not \n ");
@@ -59,5 +59,45 @@ public class Main {
 
         Folder newState = c.getState();
         newState.restore(".\\result");
+    }
+
+    public static void checkoutDemo() throws IOException {
+        // Branch change test
+
+
+        TextFile textFile = new TextFile("First file");
+
+        textFile.store();
+
+        Folder folder1 = new Folder();
+        folder1.add("file 1", textFile);
+        folder1.store();
+
+        Commit commit1 = new Commit();
+        commit1.setState(folder1.clone());
+        commit1.setDescription("First commit");
+        commit1.store();
+        System.out.println( "Right now " + commit1.hash());
+
+        TextFile textFile2 = new TextFile("Second file");
+        textFile2.store();
+
+        folder1.add("file 2", textFile2);
+        folder1.store();
+
+        Commit commit2 = new Commit();
+        commit2.setState(folder1.clone());
+        commit2.setDescription("Second commit");
+        commit2.addParent(commit1);
+        commit2.store();
+
+        System.out.println("Switch to branch " + commit1.hash() + " : ");
+        folder1.changeBranch(commit1.hash());
+
+        System.out.println("Switch to branch " + commit2.hash() + " : ");
+        folder1.changeBranch(commit2.hash());
+
+        System.out.println("Switch to branch " + commit1.hash() + " : ");
+        folder1.changeBranch(commit1.hash());
     }
 }
