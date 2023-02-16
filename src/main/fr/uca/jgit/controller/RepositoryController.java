@@ -14,7 +14,6 @@ import java.nio.file.StandardOpenOption;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
-import static fr.uca.jgit.model.Folder.loadFolder;
 
 public class RepositoryController {
     public static void commit(Commit c1){
