@@ -9,15 +9,15 @@ import java.io.IOException;
 
 public class Main {
 
-    public static void main(String[] args){
+    public static void main(String[] args) throws IOException {
         try {
             RepositoryController.initJGit();
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
-        //mergeDemo();
+        mergeDemo();
         //demoCommit();
-        checkoutDemo();
+        //checkoutDemo();
     }
     public static void demoCommit() {
         TextFile file4 = new TextFile("Hello World \nThis is a test ? \nNo it's not \n ");
@@ -31,8 +31,20 @@ public class Main {
     }
 
     public static void mergeDemo() throws IOException {
-        TextFile file4 = new TextFile("Hello World \nThis is a test ? \nNo it's not \n ");
-        TextFile file5 = new TextFile("Hello World ! \nThis is a test ? \nYes it is \n ");
+        TextFile file4 = new TextFile(
+                """
+                        Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                        Suspendisse euismod lorem nec ex varius fringilla.
+                        Vestibulum sit amet odio vel ex malesuada ultrices.
+                        Pellentesque euismod dui ac leo mattis, sat amet feugiat felis venenatis.
+                        """);
+
+        TextFile file5 = new TextFile("""
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                Suspendisse euismod lorem nec ex varius fringilla.
+                Vestibulum sit amet odio vel ex malesuada ultrices.
+                Proin vestibulum felis a sem vehicula, id blandit turpis accumsan.
+                Pellentesque euismod dui ac leo mattis, sit amet feugiat felis venenatis.""");
 
         file4.store();
         file5.store();
@@ -56,8 +68,9 @@ public class Main {
         commit2.store();
 
 
-        Commit c = commit1.merge(commit2);
+        Commit c = RepositoryController.merge(commit1, commit2);
 
+        assert c != null;
         Folder newState = c.getState();
         newState.restore("result");
     }
