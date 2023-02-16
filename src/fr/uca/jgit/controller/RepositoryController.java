@@ -38,6 +38,26 @@ public class RepositoryController {
 
     }
 
+    public static void initJGit() {
+        try {
+            if(Files.exists(Paths.get(".jgit"))){
+                System.out.println("Directories already exist!");
+                return;
+            }
+            Path newPath = Paths.get(".jgit");
+            Files.createDirectories(newPath);
+            newPath = Paths.get(".jgit", "object");
+            Files.createDirectories(newPath);
+            newPath = Paths.get(".jgit", "logs");
+            Files.createDirectories(newPath);
+            newPath = Paths.get(".jgit", "HEAD");
+            Files.createFile(newPath);
+            System.out.println("Directories are created!");
+        } catch (IOException e) {
+            System.err.println("Failed to create directories!" + e.getMessage());
+        }
+    }
+
     public static void changeBranch(String hash) {
         // Check if the branch exists
         File branchFile = new File(Paths.get(".jgit", "logs", hash).toString());
