@@ -2,6 +2,8 @@ package fr.uca.jgit.controller;
 
 import fr.uca.jgit.model.Commit;
 import fr.uca.jgit.model.Folder;
+import fr.uca.jgit.model.Node;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -12,10 +14,32 @@ import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.Queue;
 
 import static fr.uca.jgit.model.Folder.loadFolder;
 
 public class RepositoryController {
+	/**
+	 * will build a folder/file tree starting from the given root
+	 * folder, and will populate "rootFolder/.jGit/objects" 
+	 * then will create and store a commit in "rootFolder/.jGit/logs"
+	 * lastly the HEAD will be updated with the hash of the newly created commit
+	 * 
+	 * @param rootFolder the folder representing the root of our repository
+	 */
+	public void commit(Folder rootFolder) {
+		Queue<Node> unvisitedNodes = new Queue<Node>();
+		unvisitedNodes.add(rootFolder);
+		
+		while(!unvisitedNodes.isEmpty()) {
+			
+		}
+		
+		for(Node node : rootFolder.getChildren().values()) {
+			
+		}
+	}
+	
     public static void commit(Commit c1){
         c1.store();
 

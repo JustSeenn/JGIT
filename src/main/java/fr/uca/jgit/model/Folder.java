@@ -1,11 +1,17 @@
 package fr.uca.jgit.model;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
@@ -34,7 +40,7 @@ public class Folder implements Node {
 
 			// Get the values of the map in a sorted order
 			List<Node> values = new ArrayList<>(children.values());
-			Collections.sort(values, Comparator.comparing(Node::getName)); // sort by name
+			// TODO: sort this list to avoid different hashs for same folder structure
 
 			// Convert the hashes of the children to a string
 			StringBuilder sb = new StringBuilder();
@@ -64,6 +70,14 @@ public class Folder implements Node {
 	@Override
 	public void store() {
 		try {
+			// start off by storing the children first
+			// Get the values of the map in a sorted order
+			List<Node> values = new ArrayList<>(children.values());
+			for (Node node : values) {
+				node.store();
+			}
+
+			// then store the current folder object
 			String filePath = Paths.get(".jgit", "object", this.hash()).toString();
 			File myObj = new File(filePath);
 			FileWriter myWriter = new FileWriter(filePath);
