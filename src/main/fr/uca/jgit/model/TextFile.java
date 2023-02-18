@@ -112,6 +112,8 @@ public class TextFile implements Node {
         for(String s: ls){
             mergeFile.content += s + "\n";
         }
+
+        mergeFile.content = mergeFile.content.substring(0, mergeFile.content.length() - 1);
         return mergeFile;
     }
 
@@ -163,5 +165,15 @@ public class TextFile implements Node {
             j--;
         }
         return merged;
+    }
+
+    public TextFile clone(){
+        TextFile clone = new TextFile();
+        clone.content = new String(this.content);
+        return clone;
+    }
+
+    public void setContent(String content){
+        this.content = content;
     }
 }

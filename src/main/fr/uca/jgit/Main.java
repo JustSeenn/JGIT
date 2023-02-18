@@ -15,8 +15,8 @@ public class Main {
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
-        mergeDemo();
-        //demoCommit();
+        //mergeDemo();
+        demoCommit();
         //checkoutDemo();
     }
     public static void demoCommit() {
@@ -29,22 +29,15 @@ public class Main {
         RepositoryController.commit(c1);
 
     }
-
-    public static void mergeDemo() throws IOException {
+   public static void mergeDemo() throws IOException {
         TextFile file4 = new TextFile(
                 """
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                        Suspendisse euismod lorem nec ex varius fringilla.
-                        Vestibulum sit amet odio vel ex malesuada ultrices.
-                        Pellentesque euismod dui ac leo mattis, sat amet feugiat felis venenatis.
+                        Hello the World\\n how are you today ?\\n
                         """);
 
         TextFile file5 = new TextFile("""
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                Suspendisse euismod lorem nec ex varius fringilla.
-                Vestibulum sit amet odio vel ex malesuada ultrices.
-                Proin vestibulum felis a sem vehicula, id blandit turpis accumsan.
-                Pellentesque euismod dui ac leo mattis, sit amet feugiat felis venenatis.""");
+                Hello this World\\n how are you today ?\\n
+                """);
 
         file4.store();
         file5.store();
