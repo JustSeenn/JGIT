@@ -1,16 +1,15 @@
 package fr.uca.jgit.controller;
 
 
-import fr.uca.jgit.model.Commit;
-import fr.uca.jgit.model.Folder;
-import fr.uca.jgit.model.Node;
-import fr.uca.jgit.model.TextFile;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 
+import fr.uca.jgit.controller.RepositoryController;
+import fr.uca.jgit.model.Commit;
+import fr.uca.jgit.model.Folder;
+import fr.uca.jgit.model.TextFile;
 import java.io.IOException;
-import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 
