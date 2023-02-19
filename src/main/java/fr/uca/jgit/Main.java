@@ -16,33 +16,10 @@ public class Main {
 			System.out.println(e.getMessage());
 		}
 //        mergeDemo();
-		demoCommit();
 //        checkoutDemo();
 	}
 
-	public static void demoCommit() {
-		TextFile file4 = new TextFile("Hello World \nThis is a test ? \nNo it's not \n");
-		TextFile file5 = new TextFile("This is a fucking test");
-		TextFile file6 = new TextFile("Trying to fix long hash problem");
-		Folder folder1 = new Folder();
-		TextFile file7 = new TextFile("Hello World \nThis is a test ? \nNo it's not \n");
-		TextFile file8 = new TextFile("This is a fucking test");
-		TextFile file9 = new TextFile("Trying to fix long hash problem");
-		Folder folder2 = new Folder();
-		folder1.add("file4", file4);
-		folder1.add("file5", file5);
-		folder1.add("file6", file6);
-		folder2.add("file7", file7);
-		folder2.add("file8", file8);
-		folder2.add("file9", file9);
 
-		folder1.add("folder2", folder2);
-		Commit c1 = new Commit();
-		c1.setState(folder1);
-		c1.setDescription("First commit");
-		RepositoryController.commit(c1);
-
-	}
 
 	public static void mergeDemo() throws IOException {
 		TextFile file4 = new TextFile("""
