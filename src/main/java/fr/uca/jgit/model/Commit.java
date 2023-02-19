@@ -76,25 +76,13 @@ public class Commit implements JGitObject {
 	public void store() {
 		try {
 			Path filePath = Paths.get(".jgit", "logs", this.hash());
-			StringBuilder content = new StringBuilder();
 			File myObj = new File(filePath.toString());
 			FileWriter myWriter = new FileWriter(filePath.toString());
-
 			if (myObj.createNewFile()) {
 				System.out.println("File created: " + myObj.getName());
 			}
-			for (Commit c : parents) {
-				content.append(c.hash()).append(";");
-			}
-			if (content.length() > 0)
-				content.deleteCharAt(content.length() - 1);
-			content.append("\n");
-			content.append(" ").append(java.time.LocalTime.now()).append("-").append(java.time.LocalDate.now())
-					.append("\n");
-			content.append(this.description).append("\n");
-			content.append(state.hash());
 
-			myWriter.write(content.toString());
+			myWriter.write(this.toString());
 			myWriter.close();
 		} catch (IOException e) {
 			System.out.println("An error occurred.");
@@ -154,6 +142,22 @@ public class Commit implements JGitObject {
 
 		this.state.restore("result");
 
+	}
+	
+	@Override
+	public String toString() {
+		StringBuilder content = new StringBuilder();
+		for (Commit c : parents) {
+			content.append(c.hash()).append(";");
+		}
+		if (content.length() > 0)
+			content.deleteCharAt(content.length() - 1);
+		content.append("\n");
+		content.append(" ").append(java.time.LocalTime.now()).append("-").append(java.time.LocalDate.now())
+				.append("\n");
+		content.append(this.description).append("\n");
+		content.append(state.hash()); 
+		return content.toString();
 	}
 
 }
