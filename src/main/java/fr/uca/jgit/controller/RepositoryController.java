@@ -1,5 +1,6 @@
 package fr.uca.jgit.controller;
 
+
 import fr.uca.jgit.model.Commit;
 import fr.uca.jgit.model.Folder;
 import java.io.BufferedReader;
@@ -12,8 +13,6 @@ import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.time.LocalDate;
 import java.time.LocalTime;
-
-import static fr.uca.jgit.model.Folder.loadFolder;
 
 public class RepositoryController {
     public static void commit(Commit c1){

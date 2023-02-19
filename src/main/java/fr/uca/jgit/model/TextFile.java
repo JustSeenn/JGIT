@@ -1,16 +1,13 @@
 package fr.uca.jgit.model;
 
 import java.io.*;
-import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
 import java.nio.file.Path;
-import java.nio.file.Paths;
 
 
 public class TextFile implements Node {
@@ -112,6 +109,8 @@ public class TextFile implements Node {
         for(String s: ls){
             mergeFile.content += s + "\n";
         }
+
+        mergeFile.content = mergeFile.content.substring(0, mergeFile.content.length() - 1);
         return mergeFile;
     }
 
@@ -163,5 +162,15 @@ public class TextFile implements Node {
             j--;
         }
         return merged;
+    }
+
+    public TextFile clone(){
+        TextFile clone = new TextFile();
+        clone.content = new String(this.content);
+        return clone;
+    }
+
+    public void setContent(String content){
+        this.content = content;
     }
 }
