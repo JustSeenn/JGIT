@@ -13,8 +13,6 @@ import java.nio.file.StandardOpenOption;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
-import static fr.uca.jgit.model.Folder.loadFolder;
-
 public class RepositoryController {
     public static void commit(Commit c1){
         c1.store();
@@ -111,7 +109,6 @@ public class RepositoryController {
 
         return newCommit;
     }
-
     public static String add(String path){
         if(path.endsWith("/") || path.endsWith(".")){
             File workingDirectory = new File(path);
