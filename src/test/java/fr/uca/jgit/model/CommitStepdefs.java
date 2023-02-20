@@ -17,6 +17,7 @@ import fr.uca.jgit.controller.RepositoryController;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import io.cucumber.java.en.And;
 
 public class CommitStepdefs {
 	Folder folder;
@@ -60,8 +61,8 @@ public class CommitStepdefs {
 		RepositoryController.commit(commit1);
 	}
 
-	@Then("")
-	public void then(String commit) throws Throwable {
+	@Then("the object folder contains the right hashed files with the right content")
+	public void the_jgit_object_folder_contains_the_right_hashed_files_with_the_right_content() throws Throwable {
 		// check that objects contains the right files and contents
 		HashMap<String, String> theoriticalObjects = new HashMap<String, String>();
 		theoriticalObjects.put(file.hash(), file.getContent() + "\n");// TODO: check why newline is autoadded?
@@ -82,7 +83,9 @@ public class CommitStepdefs {
 
 		assertTrue(filesMap.keySet().containsAll(theoriticalObjects.keySet()));
 		assertTrue(filesMap.values().containsAll(theoriticalObjects.values()));
-
+	}
+	@And("a hashed commit file has been added to the .jgit\\/logs folder containing the right info")
+	public void a_hashed_commit_file_has_been_added_to_the_jgit_logs_folder_containing_the_right_info() throws Throwable {
 		// check that the a commit has been added to /.jgit/logs
 		String logsFolderPath = ".jgit/logs";
 		File logsFolder = new File(logsFolderPath);
@@ -99,7 +102,10 @@ public class CommitStepdefs {
 		assertTrue(commitsMap.keySet().contains(commit1.hash()));
 		assertEquals(commitsMap.get(commit1.hash()).get(commitsMap.get(commit1.hash()).size() - 1),
 				commit1.getState().hash());// check repo hash
-
+	}
+	
+	@And("the HEAD file has been correctly updated")
+	public void headUpdated() throws Throwable {
 		// check that the HEAD file is updated correctly
 		Path HEADPath = Path.of(".jgit/HEAD");
 
