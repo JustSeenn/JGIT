@@ -45,6 +45,14 @@ public class Folder implements Node {
     @Override
     public void store() {
         try {
+			// start off by storing the children first
+			// Get the values of the map in a sorted order
+			List<Node> values = new ArrayList<>(children.values());
+			for (Node node : values) {
+				node.store();
+			}
+			
+    		// then store the current folder object
             String filePath = Paths.get(".jgit", "object", this.hash()).toString();
             File myObj = new File(filePath);
             FileWriter myWriter = new FileWriter(filePath);
