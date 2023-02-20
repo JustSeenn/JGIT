@@ -15,8 +15,13 @@ import java.time.LocalTime;
 
 public class RepositoryController {
     public static void commit(Commit c1){
+		// store the repository's directory
+		c1.getState().store();
+		
+		// store the commit
         c1.store();
 
+        // update the HEAD
         Path filePath = Paths.get(".jgit", "HEAD");
 
         StringBuilder content = new StringBuilder();
