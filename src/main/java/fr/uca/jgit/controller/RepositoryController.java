@@ -3,10 +3,8 @@ package fr.uca.jgit.controller;
 
 import fr.uca.jgit.model.Commit;
 import fr.uca.jgit.model.Folder;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -59,6 +57,24 @@ public class RepositoryController {
         }
     }
 
+    public static void createBranch(String branchName) {
+        // Check if the branch exists
+        File branchFile = new File(Paths.get(".jgit", "logs", branchName).toString());
+        if (branchFile.exists()) {
+            System.out.println("fatal: A branch named " + branchName + " already exists.");
+            return ;
+        }
+
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader(Paths.get(".jgit", "HEAD").toString()));
+            String head = reader.readLine();
+            Commit commit = Commit.loadCommit(head);
+            commit.clone(branchName, false);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public static void changeBranch(String hash) {
         // Check if the branch exists
         File branchFile = new File(Paths.get(".jgit", "logs", hash).toString());
@@ -81,10 +97,29 @@ public class RepositoryController {
             e.printStackTrace();
         }
 
+        // Update the current branch information before checkout
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader(Paths.get(".jgit", "HEAD").toString()));
+            String head = reader.readLine();
+            Commit c = Commit.loadCommit(head);
+            c.setAsCurrentBranchState();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        // Checkout to given branch
         Commit commit = Commit.loadCommit(hash);
         commit.setState(Folder.loadFolder(lastLine));
         commit.checkout();
 
+        // Update current branch name
+        try {
+            FileWriter fileWriter = new FileWriter(Paths.get(".jgit", "logs", "_current_branch_").toString(), false);
+            fileWriter.write(hash);
+        } catch (IOException e) {
+            System.out.println("Une erreur est survenue.");
+            e.printStackTrace();
+        }
     }
 
     public static Commit merge(Commit c1, Commit c2) throws IOException {
