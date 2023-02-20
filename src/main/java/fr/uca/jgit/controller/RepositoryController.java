@@ -1,6 +1,5 @@
 package fr.uca.jgit.controller;
 
-
 import fr.uca.jgit.model.Commit;
 import fr.uca.jgit.model.Folder;
 import java.io.BufferedReader;
@@ -84,7 +83,6 @@ public class RepositoryController {
         Commit commit = Commit.loadCommit(hash);
         commit.setState(Folder.loadFolder(lastLine));
         commit.checkout();
-
     }
 
     public static Commit merge(Commit c1, Commit c2) throws IOException {
@@ -110,5 +108,65 @@ public class RepositoryController {
 
 
         return newCommit;
+    }
+    public static String add(String path){
+        if(path.endsWith("/") || path.endsWith(".")){
+            File workingDirectory = new File(path);
+            File[] files = workingDirectory.listFiles();
+            if( files != null){
+                for (File file : files) {
+                    if(file.isDirectory()){
+                        add(file.getPath() + "/");
+                    }
+                    if (file.isFile()) {
+                        add(file.getName());
+                    }
+                }
+            }
+            return "The files in the directory " + path + " have been added to the index.";
+        }
+        File workingDirectory = new File(".");
+        File[] files = workingDirectory.listFiles();
+        if( files != null){
+            for (File file : files) {
+                if (file.isFile()) {
+                    if (file.getName().equals(path)) {
+                        // Check if the file is already in the index
+                        File indexFile = new File(Paths.get(".jgit", "index").toString());
+                        if (!indexFile.exists()) {
+                            try {
+                                Files.createFile(Paths.get(".jgit", "index"));
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                                return "An error occurred while creating the index file.";
+                            }
+                        }
+                        try {
+                            BufferedReader reader = new BufferedReader(new FileReader(indexFile));
+                            String line;
+                            while ((line = reader.readLine()) != null) {
+                                if (line.contains(path)) {
+                                    return "The file " + path + " is already in the index.";
+                                }
+                            }
+                            reader.close();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            return "Failed to read the index file.";
+                        }
+
+                        // Add the file to the index
+                        try {
+                            Files.write(Paths.get(".jgit", "index"), (path + "\n").getBytes(), StandardOpenOption.APPEND);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                            return "An error occurred while writing to file.";
+                        }
+                        return "The file " + path + " has been added to the index.";
+                    }
+                }
+            }
+        }
+        return "The file " + path + " does not exist.";
     }
 }

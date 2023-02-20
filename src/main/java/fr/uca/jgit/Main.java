@@ -4,8 +4,6 @@ import fr.uca.jgit.model.Commit;
 import fr.uca.jgit.model.Folder;
 import fr.uca.jgit.model.TextFile;
 
-
-
 import java.io.IOException;
 
 public class Main {
@@ -30,6 +28,7 @@ public class Main {
         RepositoryController.commit(c1);
 
     }
+    
    public static void mergeDemo() throws IOException {
         TextFile file4 = new TextFile(
                 """
@@ -39,7 +38,7 @@ public class Main {
         TextFile file5 = new TextFile("""
                 Hello this World\\n how are you today ?\\n
                 """);
-
+                
         file4.store();
         file5.store();
 

@@ -163,7 +163,7 @@ public class TextFile implements Node {
         }
         return merged;
     }
-
+    
     public TextFile clone(){
         TextFile clone = new TextFile();
         clone.content = new String(this.content);
