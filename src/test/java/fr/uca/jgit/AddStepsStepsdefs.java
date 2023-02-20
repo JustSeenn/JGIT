@@ -124,8 +124,8 @@ public class AddStepsStepsdefs {
 
     @After
     public void cleanUp() throws IOException {
-        Files.deleteIfExists(Paths.get(testFile1.getName()));
-        Files.deleteIfExists(Paths.get(testFile2.getName()));
+        if(testFile1 != null) Files.deleteIfExists(Paths.get(testFile1.getName()));
+        if(testFile2 != null) Files.deleteIfExists(Paths.get(testFile2.getName()));
         Files.write(Paths.get(".jgit", "index"), "".getBytes(), StandardOpenOption.TRUNCATE_EXISTING);
     }
 }
