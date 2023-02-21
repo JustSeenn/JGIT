@@ -65,14 +65,17 @@ public class RepositoryController {
             return ;
         }
 
-        try {
-            BufferedReader reader = new BufferedReader(new FileReader(Paths.get(".jgit", "HEAD").toString()));
-            String head = reader.readLine();
-            Commit commit = Commit.loadCommit(head);
-            commit.clone(branchName, false);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        String head = RepositoryController.getHeadHash();
+        Commit commit;
+        if (!head.isEmpty()){
+            commit = Commit.loadCommit(head);
+        } else {
+            // Create a dummy commit to use as a starting point for the branch
+            commit  = new Commit();
+            commit.setState(new Folder());
+            commit.store();
         }
+        commit.clone(branchName, false);
     }
 
     public static void changeBranch(String hash) {
@@ -98,14 +101,12 @@ public class RepositoryController {
         }
 
         // Update the current branch information before checkout
-        try {
-            BufferedReader reader = new BufferedReader(new FileReader(Paths.get(".jgit", "HEAD").toString()));
-            String head = reader.readLine();
+        String head = RepositoryController.getHeadHash();
+        if (!head.isEmpty()){
             Commit c = Commit.loadCommit(head);
             c.setAsCurrentBranchState();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
         }
+
 
         // Checkout to given branch
         Commit commit = Commit.loadCommit(hash);
@@ -145,5 +146,25 @@ public class RepositoryController {
 
 
         return newCommit;
+    }
+
+    /** Get the hash of the last commit from head */
+    private static String getHeadHash(){
+        String head;
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader(Paths.get(".jgit", "HEAD").toString()));
+            head = reader.readLine();
+            String line;
+            while ((line = reader.readLine()) != null) {
+                head = line;
+            }
+            if (head == null){
+                head = "";
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        return head;
     }
 }
