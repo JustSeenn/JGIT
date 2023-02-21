@@ -1,21 +1,15 @@
 package fr.uca.jgit.model;
 
-import fr.uca.jgit.controller.RepositoryController;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
 import java.security.MessageDigest;
-import java.time.LocalDate;
-import java.time.LocalTime;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
-
 import java.util.Scanner;
 
 public class Commit implements JGitObject {
@@ -40,30 +34,34 @@ public class Commit implements JGitObject {
         return parents;
     }
 
+    public void addParent(Commit parent) {
+        this.parents.add(parent);
+    }
+
     public void setState(Folder folder1) {
         this.state = folder1;
     }
 
     @Override
     public String hash() {
-        StringBuilder hexString = new StringBuilder();
-        try {
-            MessageDigest md = MessageDigest.getInstance("MD5");
-            for(Commit entry : this.parents){
-                byte[] messageDigest = md.digest(entry.hash().getBytes());
-                for (byte b : messageDigest) {
-                    hexString.append(String.format("%02x", b & 0xff));
-                }
-            }
-            byte[] messageDigest = md.digest(state.hash().getBytes());
-            for (byte b : messageDigest) {
-                hexString.append(String.format("%02x", b & 0xff));
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return hexString.toString();
+		String hash = "";
+		try {
+			// Create a new instance of the MessageDigest using MD5 algorithm
+			MessageDigest md = MessageDigest.getInstance("MD5");
+			// Convert all the fields of the object to a string
+			String data = parents.toString() + state.toString() + description;
+			// Get the bytes of the string and apply the hash function
+			byte[] bytes = md.digest(data.getBytes());
+			// Convert the bytes to a hexadecimal string
+			StringBuilder sb = new StringBuilder();
+			for (byte b : bytes) {
+				sb.append(String.format("%02x", b));
+			}
+			hash = sb.toString();
+		} catch (NoSuchAlgorithmException e) {
+			e.printStackTrace();
+		}
+		return hash;
     }
 
     /** Stores the corresponding object in .git directory (to file .git/logs/[hash]). **/
@@ -111,7 +109,9 @@ public class Commit implements JGitObject {
 
             String[] sParents = myReader.nextLine().split(";");
             for(String s: sParents){
-                newCommit.parents.add(Commit.loadCommit(s));
+                if (!s.isEmpty()) {
+                    newCommit.parents.add(Commit.loadCommit(s));
+                }
             }
             String temp = "";
             while(myReader.hasNextLine()){
@@ -129,8 +129,8 @@ public class Commit implements JGitObject {
 
     /** Checkout the commit.
      * Removes all working directory content and restores the state of this commit.  **/
-    void checkout() {
-        File workingDirectory = new File(".");
+    public void checkout() {
+        File workingDirectory = new File("result");
         File[] files = workingDirectory.listFiles();
         if( files != null){
             for (File file : files) {
@@ -142,34 +142,11 @@ public class Commit implements JGitObject {
             }
         }
 
-        this.state.restore("");
+        this.state.restore("result");
 
     }
 
-    public Commit merge(Commit other) throws IOException {
-        // Check if there is a .cl file in the working directory
-        File workingDirectory = new File(".");
-        File[] files = workingDirectory.listFiles();
-        if( files != null){
-            for (File file : files) {
-                if (file.isFile()) {
-                    if (file.getName().equals(".cl")) {
-                        System.out.println("There is a .cl file in the working directory. Please resolve the conflicts before merging.");
-                        return null;
-                    }
-                }
-            }
-        }
-        Commit newCommit = new Commit();
-        newCommit.state = (Folder) state.merge((other).state);
-        newCommit.parents.add(this);
-        newCommit.parents.add(other);
-        newCommit.setDescription("Merge commit between " + this.hash() + " and " + other.hash());
-        RepositoryController.commit(newCommit);
 
-
-        return newCommit;
-    }
 
 
 }
