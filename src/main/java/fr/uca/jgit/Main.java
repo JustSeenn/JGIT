@@ -15,8 +15,8 @@ public class Main {
             System.out.println(e.getMessage());
         }
         //mergeDemo();
-        demoCommit();
-        //checkoutDemo();
+//        demoCommit();
+        checkoutDemo();
     }
     public static void demoCommit() {
         TextFile file4 = new TextFile("Hello World \nThis is a test ? \nNo it's not \n ");
