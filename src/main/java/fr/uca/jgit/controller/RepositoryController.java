@@ -57,12 +57,12 @@ public class RepositoryController {
         }
     }
 
-    public static void createBranch(String branchName) {
+    public static boolean createBranch(String branchName) {
         // Check if the branch exists
         File branchFile = new File(Paths.get(".jgit", "logs", branchName).toString());
         if (branchFile.exists()) {
             System.out.println("fatal: A branch named " + branchName + " already exists.");
-            return ;
+            return false;
         }
 
         String head = RepositoryController.getHeadHash();
@@ -76,6 +76,7 @@ public class RepositoryController {
             commit.store();
         }
         commit.clone(branchName, false);
+        return true;
     }
 
     public static void changeBranch(String hash) {
@@ -162,7 +163,7 @@ public class RepositoryController {
                 head = "";
             }
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            head = "";
         }
 
         return head;
