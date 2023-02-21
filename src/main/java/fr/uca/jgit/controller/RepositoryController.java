@@ -42,19 +42,30 @@ public class RepositoryController {
     }
 
     public static void initJGit() {
+        Path jgit = Paths.get(".jgit");
+        Path objects = Paths.get(".jgit", "object");
+        Path logs = Paths.get(".jgit", "logs");
+        Path head = Paths.get(".jgit", "HEAD");
         try {
-            if(Files.exists(Paths.get(".jgit"))){
+            if(Files.exists(jgit) &&
+                    Files.exists(objects) &&
+                    Files.exists(logs) &&
+                    Files.exists(head)){
                 System.out.println("Directories already exist!");
                 return;
             }
-            Path newPath = Paths.get(".jgit");
-            Files.createDirectories(newPath);
-            newPath = Paths.get(".jgit", "object");
-            Files.createDirectories(newPath);
-            newPath = Paths.get(".jgit", "logs");
-            Files.createDirectories(newPath);
-            newPath = Paths.get(".jgit", "HEAD");
-            Files.createFile(newPath);
+            if (!Files.exists(jgit)) {
+                Files.createDirectories(jgit);
+            }
+            if (!Files.exists(objects)) {
+                Files.createDirectories(objects);
+            }
+            if (!Files.exists(logs)) {
+                Files.createDirectories(logs);
+            }
+            if (!Files.exists(jgit)) {
+                Files.createFile(head);
+            }
             System.out.println("Directories are created!");
         } catch (IOException e) {
             System.err.println("Failed to create directories!" + e.getMessage());
