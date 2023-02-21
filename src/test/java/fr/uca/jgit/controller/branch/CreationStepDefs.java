@@ -1,5 +1,6 @@
-package fr.uca.jgit.controller;
+package fr.uca.jgit.controller.branch;
 
+import fr.uca.jgit.controller.RepositoryController;
 import io.cucumber.java.Before;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
@@ -7,8 +8,7 @@ import io.cucumber.java.en.When;
 import java.io.File;
 
 import static org.junit.Assert.*;
-
-public class BranchControllerStepDefs {
+public class CreationStepDefs {
     boolean result1, result2;
 
     @Before
