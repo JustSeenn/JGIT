@@ -1,6 +1,6 @@
 package fr.uca.jgit.controller;
 
-import io.cucumber.java.en.Given;
+import io.cucumber.java.Before;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 
@@ -11,7 +11,7 @@ import static org.junit.Assert.*;
 public class BranchControllerStepDefs {
     boolean result1, result2;
 
-    @Given("a repository initialized")
+    @Before
     public void init(){
         // Remove previous tacking
         File folder = new File(".jgit");

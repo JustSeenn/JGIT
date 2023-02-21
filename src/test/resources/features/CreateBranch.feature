@@ -1,6 +1,4 @@
 Feature: Create a new branch
-  Background:
-    Given a repository initialized
 
   Scenario: Branch does not exists
     When the user want to create a new branch named dev
