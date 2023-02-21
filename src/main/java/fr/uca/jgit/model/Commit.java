@@ -7,9 +7,9 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
-
 import java.util.Scanner;
 
 public class Commit implements JGitObject {
@@ -44,24 +44,24 @@ public class Commit implements JGitObject {
 
     @Override
     public String hash() {
-        StringBuilder hexString = new StringBuilder();
-        try {
-            MessageDigest md = MessageDigest.getInstance("MD5");
-            for(Commit entry : this.parents){
-                byte[] messageDigest = md.digest(entry.hash().getBytes());
-                for (byte b : messageDigest) {
-                    hexString.append(String.format("%02x", b & 0xff));
-                }
-            }
-            byte[] messageDigest = md.digest(state.hash().getBytes());
-            for (byte b : messageDigest) {
-                hexString.append(String.format("%02x", b & 0xff));
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return hexString.toString();
+		String hash = "";
+		try {
+			// Create a new instance of the MessageDigest using MD5 algorithm
+			MessageDigest md = MessageDigest.getInstance("MD5");
+			// Convert all the fields of the object to a string
+			String data = parents.toString() + state.toString() + description;
+			// Get the bytes of the string and apply the hash function
+			byte[] bytes = md.digest(data.getBytes());
+			// Convert the bytes to a hexadecimal string
+			StringBuilder sb = new StringBuilder();
+			for (byte b : bytes) {
+				sb.append(String.format("%02x", b));
+			}
+			hash = sb.toString();
+		} catch (NoSuchAlgorithmException e) {
+			e.printStackTrace();
+		}
+		return hash;
     }
 
     /** Stores the corresponding object in .git directory (to file .git/logs/[hash]). **/

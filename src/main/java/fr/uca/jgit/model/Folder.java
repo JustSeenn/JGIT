@@ -1,11 +1,17 @@
 package fr.uca.jgit.model;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
@@ -25,26 +31,49 @@ public class Folder implements Node {
     }
     @Override
     public String hash() {
-        StringBuilder hexString = new StringBuilder();
-        try {
-            MessageDigest md = MessageDigest.getInstance("MD5");
-            for(Map.Entry<String, Node> entry : this.children.entrySet()){
-                byte[] messageDigest = md.digest(entry.getValue().hash().getBytes());
-                for (byte b : messageDigest) {
-                    hexString.append(String.format("%02x", b & 0xff));
-                }
-            }
+		String hash = "";
+		try {
+			// Create a new instance of the MessageDigest using MD5 algorithm
+			MessageDigest md = MessageDigest.getInstance("MD5");
 
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return hexString.toString();
+			// Get the values of the map in a sorted order
+			List<Node> values = new ArrayList<>(children.values());
+			// TODO: sort this list to avoid different hashs for same folder structure
+
+			// Convert the hashes of the children to a string
+			StringBuilder sb = new StringBuilder();
+			for (Node node : values) {
+				sb.append(node.hash()); // recursively call hash() on each child
+			}
+			String data = sb.toString();
+
+			// Get the bytes of the string and apply the hash function
+			byte[] bytes = md.digest(data.getBytes());
+
+			// Convert the bytes to a hexadecimal string
+			sb = new StringBuilder();
+			for (byte b : bytes) {
+				sb.append(String.format("%02x", b));
+			}
+			hash = sb.toString();
+		} catch (NoSuchAlgorithmException e) {
+			e.printStackTrace();
+		}
+		return hash;
     }
 
     /** Stores the corresponding object in .git directory (file .git/object/[hash]) **/
     @Override
     public void store() {
         try {
+			// start off by storing the children first
+			// Get the values of the map in a sorted order
+			List<Node> values = new ArrayList<>(children.values());
+			for (Node node : values) {
+				node.store();
+			}
+			
+    		// then store the current folder object
             String filePath = Paths.get(".jgit", "object", this.hash()).toString();
             File myObj = new File(filePath);
             FileWriter myWriter = new FileWriter(filePath);
