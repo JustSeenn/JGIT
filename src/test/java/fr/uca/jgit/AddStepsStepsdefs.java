@@ -1,5 +1,6 @@
 package fr.uca.jgit;
 
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
@@ -126,6 +127,7 @@ public class AddStepsStepsdefs {
     public void cleanUp() throws IOException {
         if(testFile1 != null) Files.deleteIfExists(Paths.get(testFile1.getName()));
         if(testFile2 != null) Files.deleteIfExists(Paths.get(testFile2.getName()));
-        Files.write(Paths.get(".jgit", "index"), "".getBytes(), StandardOpenOption.TRUNCATE_EXISTING);
+        Path index = Paths.get(".jgit", "index");
+        if (Files.exists(index)) Files.write(index, "".getBytes(), StandardOpenOption.TRUNCATE_EXISTING);
     }
 }
