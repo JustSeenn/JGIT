@@ -1,9 +1,6 @@
 package fr.uca.jgit.model;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.MessageDigest;
@@ -151,5 +148,59 @@ public class Commit implements JGitObject {
 
     }
 
+    /**
+     * Duplicate the commit information in the new [fileName] to represent a custom branch.
+     * @param replace - Define if we want to replace [fileName] if the file already exist
+     */
+    public void clone(String fileName, boolean replace){
+        FileInputStream input;
+        try {
+            input = new FileInputStream(Paths.get(".jgit", "logs", this.hash()).toString());
+        } catch (FileNotFoundException e) {
+            System.out.println("You must store the commit before clone");
+            return;
+        }
+
+        FileOutputStream output;
+        try {
+            File outFile = new File(Paths.get(".jgit", "logs", fileName).toString());
+            if (outFile.exists() && !replace) {
+                System.out.println("The file " + fileName + "already exist");
+                return;
+            }
+            outFile.createNewFile();
+            output = new FileOutputStream(outFile);
+
+            byte[] buffer = new byte[1024];
+            int length;
+            while ((length = input.read(buffer)) > 0) {
+                output.write(buffer, 0, length);
+            }
+            input.close();
+            output.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Updates the reference of the current branch to point to this commit
+     */
+    public void setAsCurrentBranchState() {
+        File branchFile = new File(Paths.get(".jgit", "logs", "_current_branch_").toString());
+        if (!branchFile.exists()) { // It means that no custom branch does not exist
+            return ;
+        }
+
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader(branchFile));
+            String current_branch = reader.readLine();
+            if (!current_branch.isEmpty()) {
+                this.clone(current_branch, true);
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
 }
