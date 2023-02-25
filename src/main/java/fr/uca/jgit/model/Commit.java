@@ -41,27 +41,29 @@ public class Commit implements JGitObject {
 
     @Override
     public String hash() {
-		String hash = "";
-		try {
-			// Create a new instance of the MessageDigest using MD5 algorithm
-			MessageDigest md = MessageDigest.getInstance("MD5");
-			// Convert all the fields of the object to a string
-			String data = parents.toString() + state.toString() + description;
-			// Get the bytes of the string and apply the hash function
-			byte[] bytes = md.digest(data.getBytes());
-			// Convert the bytes to a hexadecimal string
-			StringBuilder sb = new StringBuilder();
-			for (byte b : bytes) {
-				sb.append(String.format("%02x", b));
-			}
-			hash = sb.toString();
-		} catch (NoSuchAlgorithmException e) {
-			e.printStackTrace();
-		}
-		return hash;
+        String hash = "";
+        try {
+            // Create a new instance of the MessageDigest using MD5 algorithm
+            MessageDigest md = MessageDigest.getInstance("MD5");
+            // Convert all the fields of the object to a string
+            String data = parents + state.toString() + description;
+            // Get the bytes of the string and apply the hash function
+            byte[] bytes = md.digest(data.getBytes());
+            // Convert the bytes to a hexadecimal string
+            StringBuilder sb = new StringBuilder();
+            for (byte b : bytes) {
+                sb.append(String.format("%02x", b));
+            }
+            hash = sb.toString();
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+        return hash;
     }
 
-    /** Stores the corresponding object in .git directory (to file .git/logs/[hash]). **/
+    /**
+     * Stores the corresponding object in .git directory (to file .git/logs/[hash]).
+     **/
     @Override
     public void store() {
         try {
@@ -73,11 +75,11 @@ public class Commit implements JGitObject {
             if (myObj.createNewFile()) {
                 System.out.println("File created: " + myObj.getName());
             }
-            for(Commit c : parents){
+            for (Commit c : parents) {
                 content.append(c.hash()).append(";");
             }
-            if(content.length() > 0)
-                content.deleteCharAt(content.length()-1);
+            if (content.length() > 0)
+                content.deleteCharAt(content.length() - 1);
             content.append("\n");
             content.append(" ").append(java.time.LocalTime.now()).append("-").append(java.time.LocalDate.now()).append("\n");
             content.append(this.description).append("\n");
@@ -93,8 +95,9 @@ public class Commit implements JGitObject {
     }
 
 
-
-    /** Loads the commit corresponding to the given hash (from file .git/logs/[hash]). **/
+    /**
+     * Loads the commit corresponding to the given hash (from file .git/logs/[hash]).
+     **/
     public static Commit loadCommit(String hash) {
 
         Commit newCommit = new Commit();
@@ -105,13 +108,13 @@ public class Commit implements JGitObject {
             Scanner myReader = new Scanner(myObj);
 
             String[] sParents = myReader.nextLine().split(";");
-            for(String s: sParents){
+            for (String s : sParents) {
                 if (!s.isEmpty()) {
                     newCommit.parents.add(Commit.loadCommit(s));
                 }
             }
             String temp = "";
-            while(myReader.hasNextLine()){
+            while (myReader.hasNextLine()) {
                 temp = myReader.nextLine();
             }
             newCommit.state = Folder.loadFolder(temp);
@@ -124,12 +127,14 @@ public class Commit implements JGitObject {
         return newCommit;
     }
 
-    /** Checkout the commit.
-     * Removes all working directory content and restores the state of this commit.  **/
+    /**
+     * Checkout the commit.
+     * Removes all working directory content and restores the state of this commit.
+     **/
     public void checkout() {
         File workingDirectory = new File("result");
         File[] files = workingDirectory.listFiles();
-        if( files != null){
+        if (files != null) {
             for (File file : files) {
                 if (file.isFile()) {
                     if (!file.delete()) {

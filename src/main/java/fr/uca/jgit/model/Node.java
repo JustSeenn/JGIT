@@ -6,5 +6,5 @@ public interface Node extends JGitObject {
     /** Restores the file node at the given path. **/
     void restore(String path);
 
-    Node merge(Node other) throws IOException;
+    Node merge(Node other);
 }

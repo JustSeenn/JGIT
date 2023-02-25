@@ -1,5 +1,6 @@
 package fr.uca.jgit.controller;
 
+
 import fr.uca.jgit.model.Commit;
 import fr.uca.jgit.model.Folder;
 
@@ -12,34 +13,6 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 
 public class RepositoryController {
-    public static void commit(Commit c1){
-		// store the repository's directory
-		c1.getState().store();
-		
-		// store the commit
-        c1.store();
-
-        // update the HEAD
-        Path filePath = Paths.get(".jgit", "HEAD");
-
-        StringBuilder content = new StringBuilder();
-        for (Commit c : c1.getParents()) {
-            content.append(c.hash()).append(";");
-        }
-        if(content.length() > 0)
-            content.deleteCharAt(content.length()-1);
-        content.append("\n");
-        content.append(LocalTime.now().toString()).append("-").append(LocalDate.now()).append("\n");
-        content.append(c1.hash());
-
-        try {
-            Files.write(filePath, content.toString().getBytes(), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
-        } catch (IOException e) {
-            System.out.println("An error occurred while writing to file.");
-            e.printStackTrace();
-        }
-
-    }
 
     public static void initJGit() {
         Path jgit = Paths.get(".jgit");
@@ -72,6 +45,7 @@ public class RepositoryController {
         }
     }
 
+
     public static boolean createBranch(String branchName) {
         // Check if the branch exists
         File branchFile = new File(Paths.get(".jgit", "logs", branchName).toString());
@@ -99,7 +73,7 @@ public class RepositoryController {
         File branchFile = new File(Paths.get(".jgit", "logs", hash).toString());
         if (!branchFile.exists()) {
             System.out.println("Branch " + hash + " does not exist");
-            return ;
+            return;
         }
 
         // Get the hash for the state of repo
@@ -139,30 +113,6 @@ public class RepositoryController {
         }
     }
 
-    public static Commit merge(Commit c1, Commit c2) throws IOException {
-        // Check if there is a .cl file in the working directory
-        File workingDirectory = new File(".");
-        File[] files = workingDirectory.listFiles();
-        if( files != null){
-            for (File file : files) {
-                if (file.isFile()) {
-                    if (file.getName().equals(".cl")) {
-                        System.out.println("There is a .cl file in the working directory. Please resolve the conflicts before merging.");
-                        return null;
-                    }
-                }
-            }
-        }
-        Commit newCommit = new Commit();
-        newCommit.setState((Folder) c1.getState().merge(c2.getState()));
-        newCommit.addParent(c1);
-        newCommit.addParent(c2);
-        newCommit.setDescription("Merge commit between " + c1.hash() + " and " + c2.hash());
-        RepositoryController.commit(newCommit);
-
-
-        return newCommit;
-    }
 
     /** Get the hash of the last commit from head */
     private static String getHeadHash() {
@@ -182,66 +132,5 @@ public class RepositoryController {
         }
 
         return head;
-    }
-
-    public static String add(String path){
-        if(path.endsWith("/") || path.endsWith(".")){
-            File workingDirectory = new File(path);
-            File[] files = workingDirectory.listFiles();
-            if( files != null){
-                for (File file : files) {
-                    if(file.isDirectory()){
-                        add(file.getPath() + "/");
-                    }
-                    if (file.isFile()) {
-                        add(file.getName());
-                    }
-                }
-            }
-            return "The files in the directory " + path + " have been added to the index.";
-        }
-        File workingDirectory = new File(".");
-        File[] files = workingDirectory.listFiles();
-        if( files != null){
-            for (File file : files) {
-                if (file.isFile()) {
-                    if (file.getName().equals(path)) {
-                        // Check if the file is already in the index
-                        File indexFile = new File(Paths.get(".jgit", "index").toString());
-                        if (!indexFile.exists()) {
-                            try {
-                                Files.createFile(Paths.get(".jgit", "index"));
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                                return "An error occurred while creating the index file.";
-                            }
-                        }
-                        try {
-                            BufferedReader reader = new BufferedReader(new FileReader(indexFile));
-                            String line;
-                            while ((line = reader.readLine()) != null) {
-                                if (line.contains(path)) {
-                                    return "The file " + path + " is already in the index.";
-                                }
-                            }
-                            reader.close();
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                            return "Failed to read the index file.";
-                        }
-
-                        // Add the file to the index
-                        try {
-                            Files.write(Paths.get(".jgit", "index"), (path + "\n").getBytes(), StandardOpenOption.APPEND);
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                            return "An error occurred while writing to file.";
-                        }
-                        return "The file " + path + " has been added to the index.";
-                    }
-                }
-            }
-        }
-        return "The file " + path + " does not exist.";
     }
 }
