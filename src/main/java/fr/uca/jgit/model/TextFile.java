@@ -13,7 +13,9 @@ import java.nio.file.Path;
 public class TextFile implements Node {
     private String content;
 
-    /** For dev purpose **/
+    /**
+     * For dev purpose
+     **/
     public TextFile(String content) {
         this.content = content;
     }
@@ -22,7 +24,7 @@ public class TextFile implements Node {
         this.content = "";
     }
 
-    public String getContent(){
+    public String getContent() {
         return this.content;
     }
 
@@ -42,7 +44,9 @@ public class TextFile implements Node {
         return hexString.toString();
     }
 
-    /** Stores the corresponding object in .git directory (to file .git/object/[hash]). **/
+    /**
+     * Stores the corresponding object in .git directory (to file .git/object/[hash]).
+     **/
     @Override
     public void store() {
         try {
@@ -58,7 +62,9 @@ public class TextFile implements Node {
         }
     }
 
-    /** Loads the text file corresponding to the given hash (from file .git/object/[hash]). **/
+    /**
+     * Loads the text file corresponding to the given hash (from file .git/object/[hash]).
+     **/
     public static TextFile loadFile(String hash) {
         StringBuilder content = new StringBuilder();
         try {
@@ -79,7 +85,9 @@ public class TextFile implements Node {
         return newTextFile;
     }
 
-    /** Restores the file node at the given path. **/
+    /**
+     * Restores the file node at the given path.
+     **/
     @Override
     public void restore(String path) {
         try {
@@ -98,7 +106,9 @@ public class TextFile implements Node {
         }
     }
 
-    /** Merges the given file with this file. **/
+    /**
+     * Merges the given file with this file.
+     **/
     @Override
     public Node merge(Node other) {
         TextFile mergeFile = new TextFile();
@@ -106,10 +116,12 @@ public class TextFile implements Node {
         List<String> file1Lines = List.of(this.content.split("\n"));
         List<String> file2Lines = List.of(otherFile.content.split("\n"));
         List<String> ls = mergeFiles(file1Lines, file2Lines);
-        for(String s: ls){
-            mergeFile.content += s + "\n";
+        StringBuilder sb = new StringBuilder();
+        for (String s : ls) {
+            sb.append(s).append("\n");
         }
 
+        mergeFile.content = sb.toString();
         mergeFile.content = mergeFile.content.substring(0, mergeFile.content.length() - 1);
         return mergeFile;
     }
@@ -149,28 +161,16 @@ public class TextFile implements Node {
                 j--;
             }
         }
-        while (i > 0) {
-            merged.add(0, "<<<<<<< HEAD");
-            merged.add(0, file1.get(i - 1));
-            merged.add(0, "=======");
-            i--;
-        }
-        while (j > 0) {
-            merged.add(0, "<<<<<<< HEAD");
-            merged.add(0, file2.get(j - 1));
-            merged.add(0, "=======");
-            j--;
-        }
         return merged;
     }
-    
-    public TextFile clone(){
+
+    public TextFile clone() {
         TextFile clone = new TextFile();
         clone.content = new String(this.content);
         return clone;
     }
 
-    public void setContent(String content){
+    public void setContent(String content) {
         this.content = content;
     }
 }
