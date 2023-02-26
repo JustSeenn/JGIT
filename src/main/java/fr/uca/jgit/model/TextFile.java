@@ -50,7 +50,7 @@ public class TextFile implements Node {
     @Override
     public void store() {
         try {
-            Path filePath = Paths.get(".jgit", "object", this.hash());
+            Path filePath = WorkingDirectory.getInstance().getPath(".jgit", "object", this.hash());
             FileWriter myWriter = new FileWriter(filePath.toString());
 
             myWriter.write(this.content);
@@ -68,7 +68,7 @@ public class TextFile implements Node {
     public static TextFile loadFile(String hash) {
         StringBuilder content = new StringBuilder();
         try {
-            Path filePath = Paths.get(".jgit", "object", hash);
+            Path filePath = WorkingDirectory.getInstance().getPath(".jgit", "object", hash);
 
             File myObj = new File(filePath.toString());
             Scanner myReader = new Scanner(myObj);

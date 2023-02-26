@@ -78,7 +78,9 @@ public class Folder implements Node {
             }
 
             // then store the current folder object
-            String filePath = Paths.get(".jgit", "object", this.hash()).toString();
+            String filePath = WorkingDirectory.getInstance().getPath(".jgit", "object", this.hash()).toString();
+
+
             File myObj = new File(filePath);
             FileWriter myWriter = new FileWriter(filePath);
 
@@ -117,7 +119,7 @@ public class Folder implements Node {
 
         Folder newFolder = new Folder();
         try {
-            File myObj = new File(Paths.get(".jgit", "object", hash).toString());
+            File myObj = new File(WorkingDirectory.getInstance().getPath(".jgit", "object", hash).toString());
             Scanner myReader = new Scanner(myObj);
             while (myReader.hasNextLine()) {
                 String[] line = myReader.nextLine().split(";");
