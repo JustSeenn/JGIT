@@ -1,4 +1,4 @@
-Feature: git add command
+Feature: jgit add command
 
 	Background:
 		Given a working repository 

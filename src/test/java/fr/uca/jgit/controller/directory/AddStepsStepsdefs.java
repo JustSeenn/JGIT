@@ -1,4 +1,4 @@
-package fr.uca.jgit;
+package fr.uca.jgit.controller.directory;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;

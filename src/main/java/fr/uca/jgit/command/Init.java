@@ -18,7 +18,7 @@ public class Init extends Command {
         try {
             super.wd.setPath(Path.of("."));
             if (Files.exists(Paths.get(".jgit"))) {
-                System.out.println("Directories already exist!");
+                System.out.println("A .jgit file already exists!");
                 return;
             }
             Path newPath = wd.getPath(".jgit");
