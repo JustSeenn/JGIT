@@ -26,6 +26,7 @@ public class RepositoryControllerStepdefs {
     Folder folder;
     Commit commit1;
     Commit commit2;
+
     @Inject
     WorkingDirectory wd;
 
@@ -33,11 +34,7 @@ public class RepositoryControllerStepdefs {
 
     public RepositoryControllerStepdefs(){}
 
-    @Given("a repository .jgit")
-    public void a_repository_jgit() {
-        Init init = new Init();
-        init.execute(String.valueOf(Paths.get(String.valueOf(Path.of(System.getProperty("user.dir"))),"temp")));
-    }
+
     @Given("a file named file with the content {string}")
     public void a_file_named_file_with_the_content(String content) {
         file = new TextFile(content);
@@ -49,11 +46,6 @@ public class RepositoryControllerStepdefs {
         folder = new Folder();
     }
 
-    @Given("a working directory")
-    public void aWorkingDirectory() {
-        WorkingDirectory.getInstance().setPath(Paths.get("temp"));
-
-    }
 
     @Given("a commit named commit1 which is the current commit")
     public void a_commit_named_commit1_which_is_the_current_commit() {
@@ -62,7 +54,7 @@ public class RepositoryControllerStepdefs {
         commit1.setState(folder.clone());
 
         StateCommit st = new StateCommit();
-        WorkingDirectory.getInstance().setPath(Paths.get("temp"));
+        //wd.setCurrentCommit(commit1); Null ??
         WorkingDirectory.getInstance().setCurrentCommit(commit1);
         st.execute("commit1");
     }
@@ -79,25 +71,24 @@ public class RepositoryControllerStepdefs {
         commit2.setState(folder.clone());
 
         StateCommit st = new StateCommit();
-        WorkingDirectory.getInstance().setPath(Paths.get("temp"));
         WorkingDirectory.getInstance().setCurrentCommit(commit2);
         st.execute("commit2");
+
 
     }
 
     @When("I do the command git merge {string}")
     public void i_do_the_command_git_merge(String arg0) {
         Merge m = new Merge();
-        WorkingDirectory.getInstance().setPath(Paths.get("temp"));
         m.execute(arg0);
     }
 
     @Then("The result of the merge has the content {string}")
     public void the_result_of_the_merge_has_the_content(String content) {
-        WorkingDirectory.getInstance().setPath(Paths.get("temp"));
         String headHash = RepositoryController.getHeadHash();
         Commit c = Commit.loadCommit(headHash);
         TextFile f = (TextFile) c.getState().getChildren().get("file");
+        if(f == null) f = (TextFile) c.getState().getChildren().get("file.cl");
         System.out.println(f.getContent() + " " + content);
         assertEquals(f.getContent(), content);
     }
