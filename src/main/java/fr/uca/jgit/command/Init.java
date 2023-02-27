@@ -1,14 +1,11 @@
 package fr.uca.jgit.command;
 
 
-import fr.uca.jgit.model.Commit;
-import fr.uca.jgit.model.WorkingDirectory;
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
-import javax.inject.Inject;
+
+import fr.uca.jgit.model.WorkingDirectory;
 
 public class Init extends Command {
 
@@ -16,7 +13,8 @@ public class Init extends Command {
     @Override
     public void execute(String... args) {
         try {
-            wd.setPath(Path.of(args[0]));
+        	String path = (args.length == 1) ? "." : args[1];
+            wd.setPath(Path.of(path));
            /* if (Files.exists(Paths.get(".jgit"))) {
                 System.out.println("Directories already exist!");
                 return;

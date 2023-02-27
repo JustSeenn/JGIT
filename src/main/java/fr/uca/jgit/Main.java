@@ -1,12 +1,12 @@
 package fr.uca.jgit;
 
+import java.io.IOException;
+
 import fr.uca.jgit.command.Add;
+import fr.uca.jgit.command.Checkout;
 import fr.uca.jgit.command.Init;
 import fr.uca.jgit.command.Merge;
 import fr.uca.jgit.command.StateCommit;
-import fr.uca.jgit.command.Checkout;
-
-import java.io.IOException;
 
 
 public class Main {
@@ -18,7 +18,7 @@ public class Main {
         }
         String command = args[0];
         switch (command) {
-            case "init" -> mainInit();
+            case "init" -> mainInit(args);
             case "commit" -> mainCommit(args[1]);
             case "merge" -> mainMerge(args[1]);
             case "add" -> mainAdd(args[1]);
@@ -27,10 +27,10 @@ public class Main {
         }
     }
 
-    public static void mainInit() {
+    public static void mainInit(String... path) {
         Init init = new Init();
         try {
-            init.execute();
+            init.execute(path);
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
