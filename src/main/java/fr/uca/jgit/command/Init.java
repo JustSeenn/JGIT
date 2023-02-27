@@ -12,15 +12,15 @@ import javax.inject.Inject;
 
 public class Init extends Command {
 
-
+    public WorkingDirectory wd = WorkingDirectory.getInstance();
     @Override
     public void execute(String... args) {
         try {
-            super.wd.setPath(Path.of("."));
-            if (Files.exists(Paths.get(".jgit"))) {
+            wd.setPath(Path.of(args[0]));
+           /* if (Files.exists(Paths.get(".jgit"))) {
                 System.out.println("Directories already exist!");
                 return;
-            }
+            }*/
             Path newPath = wd.getPath(".jgit");
 
 

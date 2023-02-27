@@ -8,10 +8,8 @@ import java.nio.file.Path;
 public abstract class Command {
     @Inject
     WorkingDirectory wd;
-
     public Command() {
         wd = WorkingDirectory.getInstance();
-        wd.setPath(Path.of(System.getProperty("user.dir")));
     }
 
 
