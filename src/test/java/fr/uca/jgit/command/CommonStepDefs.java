@@ -1,17 +1,18 @@
 package fr.uca.jgit.command;
 
-import com.google.inject.Inject;
 import fr.uca.jgit.model.WorkingDirectory;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
+import io.cucumber.java.en.Then;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
+import javax.inject.Inject;
 
 public class CommonStepDefs {
-
     @Inject
     WorkingDirectory wd;
 
@@ -30,6 +31,15 @@ public class CommonStepDefs {
     public void a_repository_jgit() {
         Init init = new Init();
         init.execute(String.valueOf(Paths.get(String.valueOf(Path.of(System.getProperty("user.dir"))),"tmpFiles")));
+    }
+    @And("a new file named {string} with content {string}")
+    public void createFile(String filename, String content){
+        try {
+            Path filePath = wd.getPath(filename);
+            Files.write(filePath, content.getBytes(), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @And("we reset the working directory")

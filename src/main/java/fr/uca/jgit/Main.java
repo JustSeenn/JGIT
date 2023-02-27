@@ -4,7 +4,7 @@ import fr.uca.jgit.command.Add;
 import fr.uca.jgit.command.Init;
 import fr.uca.jgit.command.Merge;
 import fr.uca.jgit.command.StateCommit;
-import fr.uca.jgit.controller.RepositoryController;
+import fr.uca.jgit.command.Checkout;
 
 import java.io.IOException;
 
@@ -22,6 +22,7 @@ public class Main {
             case "commit" -> mainCommit(args[1]);
             case "merge" -> mainMerge(args[1]);
             case "add" -> mainAdd(args[1]);
+            case "checkout" -> mainCheckout(args[1]);
             default -> System.out.println("Command not found");
         }
     }
@@ -52,6 +53,10 @@ public class Main {
     }
 
 
+    private static void mainCheckout(String hash) {
+        Checkout checkout = new Checkout();
+        checkout.execute(hash);
+    }
 
 
 
