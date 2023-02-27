@@ -34,5 +34,20 @@ public class Merge extends Command {
         c1.store();
         StateCommit c3 = new StateCommit();
         c3.execute("Merge commit between " + c1.hash() + " and " + c2.hash());
+
+
+        File workingDirectory = new File(wd.getPath("result").toString() );
+        File[] tmpfiles = workingDirectory.listFiles();
+        if (tmpfiles != null) {
+            for (File file : tmpfiles) {
+                if (file.isFile()) {
+                    if (!file.delete()) {
+                        System.out.println("Error deleting file: " + file.getName());
+                    }
+                }
+            }
+        }
+
+        c1.getState().restore(wd.getPath("result").toString());
     }
 }

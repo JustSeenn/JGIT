@@ -162,6 +162,7 @@ public class Folder implements Node {
             if (other instanceof Folder) {
                 if (((Folder) other).children.containsKey(entry.getKey())) {
                     TextFile temp = (TextFile) entry.getValue().merge(((Folder) other).children.get(entry.getKey()));
+                    temp.store();
                     if (temp.getContent().contains("<<<<<<<"))
                         newFolder.children.put(entry.getKey() + ".cl", temp);
                     else
@@ -176,11 +177,7 @@ public class Folder implements Node {
             if (!newFolder.children.containsKey(entry.getKey()) && !newFolder.children.containsKey(entry.getKey() + ".cl")) {
                 newFolder.children.put(entry.getKey(), entry.getValue());
             }
-
-
         }
-
-
         return newFolder;
 
     }
