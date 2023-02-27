@@ -67,7 +67,7 @@ public class Commit implements JGitObject {
     @Override
     public void store() {
         try {
-            Path filePath = Paths.get(".jgit", "logs", this.hash());
+            Path filePath = WorkingDirectory.getInstance().getPath(".jgit", "logs", this.hash());
             StringBuilder content = new StringBuilder();
             File myObj = new File(filePath.toString());
             FileWriter myWriter = new FileWriter(filePath.toString());
@@ -102,7 +102,8 @@ public class Commit implements JGitObject {
 
         Commit newCommit = new Commit();
         try {
-            Path filePath = Paths.get(".jgit", "logs", hash);
+            Path filePath = WorkingDirectory.getInstance().getPath(".jgit", "logs", hash);
+
             File myObj = new File(filePath.toString());
 
             Scanner myReader = new Scanner(myObj);
@@ -155,7 +156,9 @@ public class Commit implements JGitObject {
     public void clone(String fileName, boolean replace){
         FileInputStream input;
         try {
-            input = new FileInputStream(Paths.get(".jgit", "logs", this.hash()).toString());
+            input = new FileInputStream(WorkingDirectory.getInstance().getPath(".jgit", "logs", this.hash()).toString());
+
+
         } catch (FileNotFoundException e) {
             System.out.println("You must store the commit before clone");
             return;
@@ -187,7 +190,7 @@ public class Commit implements JGitObject {
      * Updates the reference of the current branch to point to this commit
      */
     public void setAsCurrentBranchState() {
-        File branchFile = new File(Paths.get(".jgit", "logs", "_current_branch_").toString());
+        File branchFile = new File(WorkingDirectory.getInstance().getPath(".jgit", "logs", "_current_branch_").toString());
         if (!branchFile.exists()) { // It means that no custom branch does not exist
             return ;
         }

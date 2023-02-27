@@ -1,8 +1,8 @@
 Feature: jgit init command
 
 	Background:
-		Given a working repository
-        And a new file ".jgit" with content "Pranked!"
+		Given a working directory
+        And a new file named ".jgit" with content "Pranked!"
     
     Scenario: jgit init when there is no namesake
         When the user wants to execute the command "init"

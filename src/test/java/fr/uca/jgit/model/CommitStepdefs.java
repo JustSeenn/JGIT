@@ -58,7 +58,7 @@ public class CommitStepdefs {
 		commit1.setState(folder);
 		commit1.setDescription("commit1");
 
-		RepositoryController.commit(commit1);
+		//RepositoryController.commit(commit1);
 	}
 
 	@Then("the object folder contains the right hashed files with the right content")

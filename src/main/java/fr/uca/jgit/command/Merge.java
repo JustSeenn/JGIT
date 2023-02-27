@@ -11,11 +11,12 @@ import java.io.IOException;
 
 public class Merge extends Command {
 
+    public WorkingDirectory wd = WorkingDirectory.getInstance();
     @Override
     public void execute(String... args) {
         // Check if there is a .cl file in the working directory
         Commit c2 = Commit.loadCommit(args[0]);
-        File[] files = new File(String.valueOf(super.wd.getPath())).listFiles();
+        File[] files = new File(String.valueOf(wd.getPath())).listFiles();
         if (files != null) {
             for (File file : files) {
                 if (file.isFile()) {
@@ -27,10 +28,26 @@ public class Merge extends Command {
             }
         }
 
-        Commit c1 = super.wd.getCurrentCommit();
+        Commit c1 = wd.getCurrentCommit();
         c1.setState((Folder) c1.getState().merge(c2.getState()));
         c1.addParent(c2);
-        c1.setDescription("Merge commit between " + c1.hash() + " and " + c2.hash());
-        RepositoryController.commit(c1);
+        c1.store();
+        StateCommit c3 = new StateCommit();
+        c3.execute("Merge commit between " + c1.hash() + " and " + c2.hash());
+
+
+        File workingDirectory = new File(wd.getPath("result").toString() );
+        File[] tmpfiles = workingDirectory.listFiles();
+        if (tmpfiles != null) {
+            for (File file : tmpfiles) {
+                if (file.isFile()) {
+                    if (!file.delete()) {
+                        System.out.println("Error deleting file: " + file.getName());
+                    }
+                }
+            }
+        }
+
+        c1.getState().restore(wd.getPath("result").toString());
     }
 }

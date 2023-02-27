@@ -5,6 +5,7 @@ import java.nio.file.Paths;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
 
+import fr.uca.jgit.model.WorkingDirectory;
 import io.cucumber.java.en.*;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -14,22 +15,24 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 
-public class AddStepsStepsdefs {
+public class AddStepsdefs {
 
     private File testFile1, testFile2, index;
+
+    WorkingDirectory wd = WorkingDirectory.getInstance();
     
     @Given("an already registered file {string} with content {string}")
     public void anAlreadyRegisteredFileWithContent(String filename, String content) throws IOException {
-        index = Paths.get(".jgit", "index").toFile();
+        index = wd.getPath(".jgit", "index").toFile();
         if(!index.exists()){
             index.createNewFile();
         }
 
-        if(!Files.exists(Paths.get(filename))){
+        if(!Files.exists(wd.getPath(filename))){
             testFile2 = Files.createFile(Paths.get(filename)).toFile();
         }
-        Files.write(Paths.get(filename), content.getBytes(), StandardOpenOption.CREATE);
-        Files.write(Paths.get(".jgit", "index"), (filename + "\n").getBytes(), StandardOpenOption.APPEND);
+        Files.write(wd.getPath(filename), content.getBytes(), StandardOpenOption.CREATE);
+        Files.write(wd.getPath(".jgit", "index"), (content + "\n").getBytes(), StandardOpenOption.APPEND);
         assertTrue(testFile2.exists());
     }
     
@@ -45,11 +48,10 @@ public class AddStepsStepsdefs {
         }
         reader.close();
         assertEquals(1, counter);
-        if(testFile1 != null) Files.deleteIfExists(Paths.get(testFile1.getName()));
-        if(testFile2 != null) Files.deleteIfExists(Paths.get(testFile2.getName()));
-        Path index = Paths.get(".jgit", "index");
+        if(testFile1 != null) Files.deleteIfExists(wd.getPath(testFile1.getName()));
+        if(testFile2 != null) Files.deleteIfExists(wd.getPath(testFile2.getName()));
+        Path index = wd.getPath(".jgit", "index");
         if (Files.exists(index)) Files.write(index, "".getBytes(), StandardOpenOption.TRUNCATE_EXISTING);
-        
     }
 
     @Then("all the files in the directory {string} should be added to the index")
@@ -81,7 +83,7 @@ public class AddStepsStepsdefs {
         }
         if(testFile1 != null) Files.deleteIfExists(Paths.get(testFile1.getName()));
         if(testFile2 != null) Files.deleteIfExists(Paths.get(testFile2.getName()));
-        Path index = Paths.get(".jgit", "index");
+        Path index = wd.getPath(".jgit", "index");
         if (Files.exists(index)) Files.write(index, "".getBytes(), StandardOpenOption.TRUNCATE_EXISTING);
     }
 }

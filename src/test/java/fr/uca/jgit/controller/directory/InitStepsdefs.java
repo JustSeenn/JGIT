@@ -2,6 +2,9 @@ package fr.uca.jgit.controller.directory;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+
+import fr.uca.jgit.model.WorkingDirectory;
+
 import java.nio.file.Files;
 
 import io.cucumber.java.en.*;
@@ -12,22 +15,35 @@ import java.io.File;
 import java.io.IOException;
 
 public class InitStepsdefs {
+
+    WorkingDirectory wd = WorkingDirectory.getInstance();
+
     @Then("a new jgit repository is created")
     public void a_new_jgit_repository_is_created() {
-        //check if the .jgit directory and its files are created
-        Path jgit = Paths.get(".jgit");
+        Path jgit = wd.getPath(".jgit");
         assertTrue(Files.exists(jgit));
-        Path object = Paths.get(".jgit", "object");
-        assertTrue(Files.exists(object));
-        Path logs = Paths.get(".jgit", "logs");
-        assertTrue(Files.exists(logs));
-        Path head = Paths.get(".jgit", "HEAD");
-        assertTrue(Files.exists(head));
+        assertTrue(Files.isDirectory(jgit));
+        File[] files = jgit.toFile().listFiles();
+        assertNotNull(files);
+        for (File file : files) {
+            if(file.getName().equals("HEAD")){
+                assertTrue(file.isFile());
+            }
+            else if(file.getName().equals("objects")){
+                assertTrue(file.isDirectory());
+            }
+            else if(file.getName().equals("refs")){
+                assertTrue(file.isDirectory());
+            }
+            else{
+                fail("Unknown file in .jgit directory: " + file.getName());
+            }
+        }
     }
 
     @Then("no new jgit repository is created")
     public void no_new_jgit_repository_is_created() throws IOException {
-        Path jgit = Paths.get(".jgit");
+        Path jgit = wd.getPath(".jgit");
         if(Files.exists(jgit)){
             if(Files.isDirectory(jgit)){
                 File[] files = jgit.toFile().listFiles();

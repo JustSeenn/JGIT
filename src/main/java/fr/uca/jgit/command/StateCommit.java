@@ -14,6 +14,7 @@ import java.time.LocalTime;
 
 public class StateCommit extends Command {
 
+    public WorkingDirectory wd = WorkingDirectory.getInstance();
 
     @Override
     public void execute(String... args) {

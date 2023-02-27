@@ -3,14 +3,13 @@ package fr.uca.jgit.controller;
 
 import fr.uca.jgit.model.Commit;
 import fr.uca.jgit.model.Folder;
+import fr.uca.jgit.model.WorkingDirectory;
 
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
-import java.time.LocalDate;
-import java.time.LocalTime;
+
 
 public class RepositoryController {
 
@@ -115,10 +114,10 @@ public class RepositoryController {
 
 
     /** Get the hash of the last commit from head */
-    private static String getHeadHash() {
+    static String getHeadHash() {
         String head;
         try {
-            BufferedReader reader = new BufferedReader(new FileReader(Paths.get(".jgit", "HEAD").toString()));
+            BufferedReader reader = new BufferedReader(new FileReader(WorkingDirectory.getInstance().getPath(".jgit", "HEAD").toString()));
             head = reader.readLine();
             String line;
             while ((line = reader.readLine()) != null) {
