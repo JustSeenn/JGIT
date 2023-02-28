@@ -43,27 +43,22 @@ public class CommitStepdefs {
 		}
 		return sb.toString();
 	}
-
-	@Given("a project folder containing two files containing {string} and {string}")
-	public void given(String content1, String content2) throws Throwable {
-		RepositoryController.initJGit();
-
-		folder = new Folder();
-		file = new TextFile(content1);
-		file2 = new TextFile(content2);
-		folder.add("file", file);
-		folder.add("file2", file2);
-	}
 	
-	@When("we make a commit with description {string}")
-	public void when(String commit) throws Throwable {
-		commit1 = new Commit();
-		commit1.setState(folder);
-		commit1.setDescription("commit1");
+    @And("a temporary .txt file {string} containing {string}")
+    public void createFileWithPath(String filePathString, String content) {
+    	try {
+            Path filePath = Path.of(filePathString);
+            Path parentPath = Path.of(".tmp/" + filePath.getParent());
 
-		StateCommit 
-		RepositoryController.commit(commit1);
-	}
+            if (parentPath != null) {
+                Files.createDirectories(parentPath);
+            }
+            Path tempFile = Files.createTempFile(parentPath, filePath.getFileName().toString(), ".txt");
+            System.out.println("Created temporary file at: " + tempFile);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
 	@Then("the object folder contains the right hashed files with the right content")
 	public void the_jgit_object_folder_contains_the_right_hashed_files_with_the_right_content() throws Throwable {

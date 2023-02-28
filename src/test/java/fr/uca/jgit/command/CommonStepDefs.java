@@ -1,16 +1,16 @@
 package fr.uca.jgit.command;
 
-import fr.uca.jgit.model.WorkingDirectory;
-import io.cucumber.java.en.And;
-import io.cucumber.java.en.Given;
-import io.cucumber.java.en.Then;
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+
 import javax.inject.Inject;
+
+import fr.uca.jgit.model.WorkingDirectory;
+import io.cucumber.java.en.And;
+import io.cucumber.java.en.Given;
 
 public class CommonStepDefs {
     @Inject

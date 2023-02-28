@@ -35,6 +35,7 @@ public class StateCommit extends Command {
 		if (systemStartingFolder.isDirectory()) {
 			File[] children = systemStartingFolder.listFiles();
 			for (File child : children) {
+				String systemFileName = child.getName();
 				// if the child is a text file
 				if (child.isFile() && child.getName().endsWith(".txt")) {
 					TextFile jGitTextFile = new TextFile();
@@ -50,7 +51,7 @@ public class StateCommit extends Command {
 					}
 					String content = contentBuilder.toString();
 					jGitTextFile.setContent(content);
-					jGitStartingFolder.add(jGitTextFile.hash(), jGitTextFile);
+					jGitStartingFolder.add(systemFileName, jGitTextFile);
 				}
 
 				// if the child is a directory
@@ -58,9 +59,7 @@ public class StateCommit extends Command {
 					Folder jGitExploredFolder = new Folder();
 					String exploredFolderPath = child.getPath();
 					populateWithChildren(exploredFolderPath, jGitExploredFolder);
-					// before adding folder to parent folder we need to populate it with
-					// children to generate the correct hash
-					jGitStartingFolder.add(jGitExploredFolder.hash(), jGitExploredFolder);
+					jGitStartingFolder.add(systemFileName, jGitExploredFolder);
 				}
 			}
 		} else {
@@ -82,6 +81,7 @@ public class StateCommit extends Command {
 		// we need to add all children files/folders into a new Folder object
 
 		// TODO: change to use results of add()
+//		String wdPath = ".";
 		String wdPath = wd.getPath().toString();
 		Folder jGitRootDir = c1.getState();
 		if (jGitRootDir == null) {
@@ -101,7 +101,7 @@ public class StateCommit extends Command {
 
 		StringBuilder content = new StringBuilder();
 		for (fr.uca.jgit.model.Commit c : c1.getParents()) {
-			content.append(c.hash()).append(";");
+			if (c != null) content.append(c.hash()).append(";");
 		}
 		if (content.length() > 0)
 			content.deleteCharAt(content.length() - 1);
