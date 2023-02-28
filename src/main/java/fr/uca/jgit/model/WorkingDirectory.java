@@ -1,10 +1,11 @@
 package fr.uca.jgit.model;
 
-import cucumber.runtime.java.guice.ScenarioScoped;
-
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashMap;
 import java.util.Map;
+
+import cucumber.runtime.java.guice.ScenarioScoped;
 
 
 @ScenarioScoped
@@ -17,7 +18,7 @@ public class WorkingDirectory {
 
     private WorkingDirectory() {
         this.path = null;
-        this.commitMap = null;
+        this.commitMap = new HashMap<>();
         this.currentCommit = null;
     }
 
