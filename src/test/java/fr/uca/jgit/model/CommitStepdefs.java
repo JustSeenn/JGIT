@@ -13,6 +13,7 @@ import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.List;
 
+import fr.uca.jgit.command.StateCommit;
 import fr.uca.jgit.controller.RepositoryController;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
@@ -24,6 +25,8 @@ public class CommitStepdefs {
 	TextFile file;
 	TextFile file2;
 	Commit commit1;
+	
+	WorkingDirectory wd = WorkingDirectory.getInstance();
 
 	public CommitStepdefs() {
 
@@ -51,13 +54,14 @@ public class CommitStepdefs {
 		folder.add("file", file);
 		folder.add("file2", file2);
 	}
-
+	
 	@When("we make a commit with description {string}")
 	public void when(String commit) throws Throwable {
 		commit1 = new Commit();
 		commit1.setState(folder);
 		commit1.setDescription("commit1");
 
+		StateCommit 
 		RepositoryController.commit(commit1);
 	}
 
