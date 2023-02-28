@@ -4,8 +4,10 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -13,19 +15,15 @@ import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.List;
 
-import fr.uca.jgit.command.StateCommit;
-import fr.uca.jgit.controller.RepositoryController;
-import io.cucumber.java.en.Given;
-import io.cucumber.java.en.Then;
-import io.cucumber.java.en.When;
 import io.cucumber.java.en.And;
+import io.cucumber.java.en.Then;
 
 public class CommitStepdefs {
 	Folder folder;
 	TextFile file;
 	TextFile file2;
 	Commit commit1;
-	
+
 	WorkingDirectory wd = WorkingDirectory.getInstance();
 
 	public CommitStepdefs() {
@@ -43,22 +41,39 @@ public class CommitStepdefs {
 		}
 		return sb.toString();
 	}
-	
-    @And("a temporary .txt file {string} containing {string}")
-    public void createFileWithPath(String filePathString, String content) {
-    	try {
-            Path filePath = Path.of(filePathString);
-            Path parentPath = Path.of(".tmp/" + filePath.getParent());
 
-            if (parentPath != null) {
-                Files.createDirectories(parentPath);
-            }
-            Path tempFile = Files.createTempFile(parentPath, filePath.getFileName().toString(), ".txt");
-            System.out.println("Created temporary file at: " + tempFile);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
+	@And("a temporary .txt file {string} containing {string}")
+	public void createFileWithPath(String filePathString, String content) {
+		try {
+			// create needed dirs
+			Path filePath = Path.of(filePathString);
+			Path parentPath = Path.of(".tmp/" + filePath.getParent());
+			if (parentPath != null) {
+				Files.createDirectories(parentPath);
+			}
+
+			// create .txt file
+			File textFile = new File(".tmp/" + filePathString);
+			textFile.createNewFile();
+
+			// set .txt file contents
+			try {
+				FileWriter fileWriter = new FileWriter(textFile);
+				BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
+
+				bufferedWriter.write(content);
+
+				bufferedWriter.close();
+
+				System.out.println("Content set successfully.");
+			} catch (IOException e) {
+				System.out.println("An error occurred.");
+				e.printStackTrace();
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 
 	@Then("the object folder contains the right hashed files with the right content")
 	public void the_jgit_object_folder_contains_the_right_hashed_files_with_the_right_content() throws Throwable {
@@ -83,8 +98,10 @@ public class CommitStepdefs {
 		assertTrue(filesMap.keySet().containsAll(theoriticalObjects.keySet()));
 		assertTrue(filesMap.values().containsAll(theoriticalObjects.values()));
 	}
+
 	@And("a hashed commit file has been added to the .jgit\\/logs folder containing the right info")
-	public void a_hashed_commit_file_has_been_added_to_the_jgit_logs_folder_containing_the_right_info() throws Throwable {
+	public void a_hashed_commit_file_has_been_added_to_the_jgit_logs_folder_containing_the_right_info()
+			throws Throwable {
 		// check that the a commit has been added to /.jgit/logs
 		String logsFolderPath = ".jgit/logs";
 		File logsFolder = new File(logsFolderPath);
@@ -102,7 +119,7 @@ public class CommitStepdefs {
 		assertEquals(commitsMap.get(commit1.hash()).get(commitsMap.get(commit1.hash()).size() - 1),
 				commit1.getState().hash());// check repo hash
 	}
-	
+
 	@And("the HEAD file has been correctly updated")
 	public void headUpdated() throws Throwable {
 		// check that the HEAD file is updated correctly

@@ -3,14 +3,10 @@ Feature: Commmit Feature
 	Background: 
 		Given a working directory
 		And a repository .jgit
-#		And a temporary .txt file "dir1/dir2/file" containing "content 1"
-#		And a temporary .txt file "dir1/file" containing "content"
-#		And a temporary .txt file "dir1/dir2/file2" containing "content 2"
-#		And a temporary .txt file "file" containing "content"'
-    And a file named file with the content "Hello World\n how are you today ?\n"
-    And a folder named folder1
-    And a commit named commit1 which is the current commit
-    And a commit named commit2
+		And a temporary .txt file "dir1/dir2/file.txt" containing "content 1"
+		And a temporary .txt file "dir1/file.txt" containing "content"
+		And a temporary .txt file "dir1/dir2/file2.txt" containing "content 2"
+		And a temporary .txt file "file.txt" containing "content"
 		
 
   Scenario: making a simple commit check for validity of created files
