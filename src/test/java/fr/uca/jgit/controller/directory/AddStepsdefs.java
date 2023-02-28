@@ -29,7 +29,7 @@ public class AddStepsdefs {
         }
 
         if(!Files.exists(wd.getPath(filename))){
-            testFile2 = Files.createFile(Paths.get(filename)).toFile();
+            testFile2 = Files.createFile(wd.getPath(filename)).toFile();
         }
         Files.write(wd.getPath(filename), content.getBytes(), StandardOpenOption.CREATE);
         Files.write(wd.getPath(".jgit", "index"), (content + "\n").getBytes(), StandardOpenOption.APPEND);
