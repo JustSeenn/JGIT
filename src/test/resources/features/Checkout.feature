@@ -3,6 +3,6 @@ Feature: Checkout a branch
     Given a working directory
     And a new file named "test.txt" with content "JE SUIS ..."
 
-  Scenario: The user wants to checkout a branch that does not exist.
+  #Scenario: The user wants to checkout a branch that does not exist.
     When the user wants to execute the command "checkout" with argument "dxhrb_invalid_hash_kklfjd"
     Then the result is

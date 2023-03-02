@@ -16,6 +16,7 @@ public class CommandStepDefs {
     public void executeCommandWithoutArgs(String command){
         executeCommand(command, "");
     }
+    
     @When("the user wants to execute the command {string} with argument {string}")
     public void executeCommand(String command, String argument) {
         try {
