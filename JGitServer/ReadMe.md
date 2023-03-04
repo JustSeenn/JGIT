@@ -52,3 +52,10 @@ Therefore the form of our request object should be similar to:
 ### Pull
 
 pulling from our server is recovering last modifications on our jgit repository and applying them to the local client repository. On the server pulling is an inverse push. There are many conditions to look for while pulling.
+
+## Client-Side
+
+### Push
+on our client side application, we will use the same `PushRequest` class added to our server and add a new command class for the Push. 
+We should make a function that will read the files in our `.jgit` folder and create a new instance of `PushRequest` from the information recovered.
+lastly we will send the object to our server `localhost:8080/push`, for now all the data in our server will be overwritten by the newly sent data.

@@ -19,7 +19,6 @@ public class PushRequest {
 
 	List<String> head;
 	String commitHash;
-
 	List<String> commitLog;
 	List<HashMap<String, List<String>>> objectsList;
 
@@ -171,7 +170,7 @@ public class PushRequest {
 	public void setObjects(List<HashMap<String, List<String>>> objects) {
 		this.objectsList = objects;
 	}
-	
+
 	/**
 	 * @return the commitHash
 	 */

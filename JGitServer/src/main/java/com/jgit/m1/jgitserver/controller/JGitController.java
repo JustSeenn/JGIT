@@ -18,11 +18,12 @@ public class JGitController {
 
 	@PostMapping(value = "/push")
 	public void push(@RequestBody PushRequest pushRequest) throws IOException {
+		Util.deleteFolder("./.jgit"); // to be changed
 		pushRequest.storePushRequest();
 	}
 
-	@PostMapping(value = "/post")
-	public void post(@RequestBody String requestString) {
+	@PostMapping(value = "/pull")
+	public void pull(@RequestBody String requestString) {
 		// ...
 	}
 
