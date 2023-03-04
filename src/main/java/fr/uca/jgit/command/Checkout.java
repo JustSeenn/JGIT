@@ -1,11 +1,10 @@
 package fr.uca.jgit.command;
 
+import fr.uca.jgit.controller.RepositoryController;
 import fr.uca.jgit.model.Commit;
 import fr.uca.jgit.model.Folder;
 
-import java.io.File;
-import java.io.BufferedReader;
-import java.io.FileReader;
+import java.io.*;
 import java.nio.file.Paths;
 
 public class Checkout extends Command{
@@ -31,11 +30,26 @@ public class Checkout extends Command{
             System.err.println("Failed to read the last line of the file.");
             e.printStackTrace();
         }
+        // Update the current branch information before checkout
+        String head = RepositoryController.getHeadHash();
+        if (!head.isEmpty()){
+            Commit c = Commit.loadCommit(head);
+            c.setAsCurrentBranchState();
+        }
 
         // Checkout to given branch
         Commit commit = Commit.loadCommit(args[0]);
         commit.setState(Folder.loadFolder(lastLine));
         commit.checkout();
         super.wd.setCurrentCommit(commit);
+
+        // Update current branch name
+        try {
+            FileWriter fileWriter = new FileWriter(Paths.get(".jgit", "logs", "_current_branch_").toString(), false);
+            fileWriter.write(args[0]);
+        } catch (IOException e) {
+            System.out.println("Error while updating current branch name");
+            e.printStackTrace();
+        }
     }
 }
