@@ -56,7 +56,7 @@ public class PushRequest {
 	 */
 	public void checkInit() throws IOException {
 		createFoldersFromPath(".jgit/");
-		createFoldersFromPath(".jgit/object/");
+		createFoldersFromPath(".jgit/objects/");
 		createFoldersFromPath(".jgit/logs/");
 	}
 
