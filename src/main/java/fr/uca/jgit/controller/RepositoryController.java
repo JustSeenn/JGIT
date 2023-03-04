@@ -114,7 +114,7 @@ public class RepositoryController {
 
 
     /** Get the hash of the last commit from head */
-    static String getHeadHash() {
+    public static String getHeadHash() {
         String head;
         try {
             BufferedReader reader = new BufferedReader(new FileReader(WorkingDirectory.getInstance().getPath(".jgit", "HEAD").toString()));
