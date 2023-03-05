@@ -3,6 +3,7 @@ package fr.uca.jgit.command;
 import fr.uca.jgit.controller.RepositoryController;
 import fr.uca.jgit.model.Commit;
 import fr.uca.jgit.model.Folder;
+import fr.uca.jgit.model.WorkingDirectory;
 
 import java.io.*;
 import java.nio.file.Paths;
@@ -41,11 +42,11 @@ public class Checkout extends Command{
         Commit commit = Commit.loadCommit(args[0]);
         commit.setState(Folder.loadFolder(lastLine));
         commit.checkout();
-        super.wd.setCurrentCommit(commit);
+        WorkingDirectory.getInstance().setCurrentCommit(commit);
 
         // Update current branch name
         try {
-            FileWriter fileWriter = new FileWriter(Paths.get(".jgit", "logs", "_current_branch_").toString(), false);
+            FileWriter fileWriter = new FileWriter(WorkingDirectory.getInstance().getPath(".jgit", "logs", "_current_branch_").toString(), false);
             fileWriter.write(args[0]);
         } catch (IOException e) {
             System.out.println("Error while updating current branch name");
