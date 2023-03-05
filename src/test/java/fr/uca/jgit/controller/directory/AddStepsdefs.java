@@ -20,7 +20,7 @@ import java.io.IOException;
 
 public class AddStepsdefs {
 
-    private File testFile1, testFile2, index;
+    private File index;
 
     @Inject
     WorkingDirectory wd;
@@ -53,9 +53,6 @@ public class AddStepsdefs {
         }
         reader.close();
         assertEquals(1, counter);
-        if(testFile1 != null) Files.deleteIfExists(testFile1.toPath());
-        if(testFile2 != null) Files.deleteIfExists(testFile2.toPath());
-        if (Files.exists(index.toPath())) Files.write(index.toPath(), "".getBytes(), StandardOpenOption.TRUNCATE_EXISTING);
     }
 
     @Then("all the files in the directory {string} should be added to the index")

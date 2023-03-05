@@ -17,8 +17,7 @@ public class Init extends Command {
     @Override
     public void execute(String... args) {
         try {
-            String path = (args.length == 1) ? "." : args[1];
-
+            String path = (args.length < 1) ? "." : args[1];
             wd.setPath(Path.of(path));
             Path newPath = wd.getPath(".jgit");
             if(Files.exists(newPath)) {

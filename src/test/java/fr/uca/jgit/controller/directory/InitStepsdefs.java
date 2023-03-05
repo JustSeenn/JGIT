@@ -18,9 +18,12 @@ import java.io.IOException;
 
 public class InitStepsdefs {
 
+    @Inject
+    WorkingDirectory wd;
+
     @Then("a new jgit repository is created")
     public void a_new_jgit_repository_is_created() {
-        Path jgit = Paths.get(".jgit");
+        Path jgit = WorkingDirectory.getInstance().getPath(".jgit");
         assertTrue(Files.exists(jgit));
         assertTrue(Files.isDirectory(jgit));
         File[] files = jgit.toFile().listFiles();
@@ -39,12 +42,14 @@ public class InitStepsdefs {
                 fail("Unknown file in .jgit directory: " + file.getName());
             }
         }
-        //delete .jgit directory
-        File[] filesToDelete = jgit.toFile().listFiles();
-        for (File file : filesToDelete) {
-            file.delete();
+        try {
+            Files.walk(WorkingDirectory.getInstance().getPath(".jgit"))
+                    .sorted((o1, o2) -> o2.compareTo(o1))
+                    .map(Path::toFile)
+                    .forEach(File::delete);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-        jgit.toFile().delete();
     }
 
     @Then("no new jgit repository is created")
