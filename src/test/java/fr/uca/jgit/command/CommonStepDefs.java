@@ -42,7 +42,7 @@ public class CommonStepDefs {
         }
     }
 
-    @And("we reset the working directory")
+    @Then("we reset the working directory")
     public void weResetTheWorkingDirectory() {
         wd = WorkingDirectory.getInstance();
         try {
