@@ -25,7 +25,7 @@ public class Init extends Command {
                 return;
             }
             Files.createDirectories(newPath);
-            newPath = wd.getPath(".jgit", "object");
+            newPath = wd.getPath(".jgit", "objects");
             Files.createDirectories(newPath);
 
             newPath = wd.getPath(".jgit", "logs");

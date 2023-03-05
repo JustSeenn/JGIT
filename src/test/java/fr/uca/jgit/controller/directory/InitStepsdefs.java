@@ -32,7 +32,7 @@ public class InitStepsdefs {
             if(file.getName().equals("HEAD")){
                 assertTrue(file.isFile());
             }
-            else if(file.getName().equals("object")){
+            else if(file.getName().equals("objects")){
                 assertTrue(file.isDirectory());
             }
             else if(file.getName().equals("logs")){
@@ -42,22 +42,25 @@ public class InitStepsdefs {
                 fail("Unknown file in .jgit directory: " + file.getName());
             }
         }
+        wd = WorkingDirectory.getInstance();
+        wd.setPath(Paths.get(".jgit"));
         try {
-            Files.walk(WorkingDirectory.getInstance().getPath(".jgit"))
+            Files.walk(wd.getPath())
                     .sorted((o1, o2) -> o2.compareTo(o1))
                     .map(Path::toFile)
-                    .forEach(File::delete);
+                    .forEach(java.io.File::delete);
         } catch (IOException e) {
             e.printStackTrace();
         }
+        wd.setPath(Paths.get("tmpFiles"));
     }
 
     @Then("no new jgit repository is created")
     public void no_new_jgit_repository_is_created() throws IOException {
-        WorkingDirectory jgit = WorkingDirectory.getInstance();
+        wd = WorkingDirectory.getInstance();
         Path path = Paths.get("tmpFiles");
-        jgit.setPath(path);
-        assertFalse(Files.isDirectory(jgit.getPath(".jgit")));
+        wd.setPath(path);
+        assertFalse(Files.isDirectory(wd.getPath(".jgit")));
     }
 }
     
