@@ -7,6 +7,7 @@ import java.nio.file.StandardOpenOption;
 
 import javax.inject.Inject;
 
+import fr.uca.jgit.Main;
 import fr.uca.jgit.model.WorkingDirectory;
 import io.cucumber.java.en.*;
 
@@ -24,6 +25,7 @@ public class AddStepsdefs {
     @Inject
     WorkingDirectory wd;
     
+    
     @Given("the file {string} is already added to the index")
     public void the_file_is_already_added_to_the_index(String s) throws IOException {
         Path jgit = WorkingDirectory.getInstance().getPath(".jgit");
@@ -35,7 +37,7 @@ public class AddStepsdefs {
         if(!index.exists()){
             Files.createFile(WorkingDirectory.getInstance().getPath(".jgit", "index"));
         }
-        Files.write(WorkingDirectory.getInstance().getPath(".jgit", "index"), (s + "\n").getBytes(), StandardOpenOption.APPEND);
+        Files.write(WorkingDirectory.getInstance().getPath(".jgit", "index"), (WorkingDirectory.getInstance().getPath(s) + "\n").getBytes(), StandardOpenOption.APPEND);
         assertTrue(index.exists());
     }
     
@@ -51,41 +53,36 @@ public class AddStepsdefs {
         }
         reader.close();
         assertEquals(1, counter);
-        if(testFile1 != null) Files.deleteIfExists(WorkingDirectory.getInstance().getPath(testFile1.getName()));
-        if(testFile2 != null) Files.deleteIfExists(WorkingDirectory.getInstance().getPath(testFile2.getName()));
-        Path index = WorkingDirectory.getInstance().getPath(".jgit", "index");
-        if (Files.exists(index)) Files.write(index, "".getBytes(), StandardOpenOption.TRUNCATE_EXISTING);
+        if(testFile1 != null) Files.deleteIfExists(testFile1.toPath());
+        if(testFile2 != null) Files.deleteIfExists(testFile2.toPath());
+        if (Files.exists(index.toPath())) Files.write(index.toPath(), "".getBytes(), StandardOpenOption.TRUNCATE_EXISTING);
     }
 
     @Then("all the files in the directory {string} should be added to the index")
     public void all_the_files_in_the_directory_should_be_added_to_the_index(String path) throws IOException {
-        File workingDirectory = new File(path);
-        File[] files = workingDirectory.listFiles();
+        if(path.equals(".")) path = "";
+        File addedDirectory = new File(WorkingDirectory.getInstance().getPath(path).toString());
+        System.out.println("tmp: " + WorkingDirectory.getInstance().getPath(path));
+        File[] files = addedDirectory.listFiles();
         if( files != null){
             for (File file : files) {
                 if(file.isDirectory()){
-                    all_the_files_in_the_directory_should_be_added_to_the_index(file.getPath() + "/");
+                    all_the_files_in_the_directory_should_be_added_to_the_index(file.getPath());
                 }
                 if (file.isFile()) {
-                    try {
-                        BufferedReader reader = new BufferedReader(new FileReader(index));
-                        String line;
-                        while ((line = reader.readLine()) != null) {
-                            if (line.contains(file.getName())) {
-                                return;
-                            }
+                    BufferedReader reader = new BufferedReader(new FileReader(index));
+                    String line = "";
+                    boolean found = false;
+                    while ((line = reader.readLine()) != null){
+                        System.out.println("line: " + line.toString() + " file: " + file.toPath().toString());
+                        if (line.toString().contains(file.toPath().toString())) {
+                            found = true;
                         }
-                        reader.close();
-                    } catch (Exception e) {
-                        e.printStackTrace();
                     }
-                    fail("The file " + file.getName() + " is not in the index.");
+                    reader.close();
+                    assertTrue(found, "File " + file.toPath().toString() + " not found in index");
                 }
             }
         }
-        if(testFile1 != null) Files.deleteIfExists(Paths.get(testFile1.getName()));
-        if(testFile2 != null) Files.deleteIfExists(Paths.get(testFile2.getName()));
-        Path index = WorkingDirectory.getInstance().getPath(".jgit", "index");
-        if (Files.exists(index)) Files.write(index, "".getBytes(), StandardOpenOption.TRUNCATE_EXISTING);
     }
 }
