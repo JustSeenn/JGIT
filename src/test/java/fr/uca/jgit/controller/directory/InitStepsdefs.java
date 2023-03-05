@@ -55,16 +55,14 @@ public class InitStepsdefs {
     @Then("no new jgit repository is created")
     public void no_new_jgit_repository_is_created() throws IOException {
         Path jgit = WorkingDirectory.getInstance().getPath(".jgit");
-        if(Files.exists(jgit)){
-            if(Files.isDirectory(jgit)){
-                File[] files = jgit.toFile().listFiles();
-                if(files != null){
-                    assertNotEquals(0, files.length);
-                }
-            }
-            else{
-                assertNotEquals(0, Files.size(jgit));
-            }
+        assertFalse(Files.isDirectory(jgit));
+        try {
+            Files.walk(WorkingDirectory.getInstance().getPath(".jgit"))
+                    .sorted((o1, o2) -> o2.compareTo(o1))
+                    .map(Path::toFile)
+                    .forEach(File::delete);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }

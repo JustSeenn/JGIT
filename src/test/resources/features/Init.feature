@@ -2,7 +2,7 @@ Feature: jgit init command
 
 	Background:
 		Given a working directory
-        #And a new file named ".jgit" with content "Pranked!"
+        And a new file named ".jgit" with content "Pranked!"
     
     Scenario: jgit init when there is no namesake
         When the user want to execute the command "init"
