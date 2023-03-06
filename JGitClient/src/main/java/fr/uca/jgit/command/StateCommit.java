@@ -28,8 +28,8 @@ public class StateCommit extends Command {
 		// read the index file into a list of files and folders
 		List<String> indexLines = new ArrayList<>();
 		try {
-			BufferedReader reader = new BufferedReader(new FileReader("./.jgit/HEAD")); // Create a new BufferedReader
-																						// to read the file
+			BufferedReader reader = new BufferedReader(new FileReader("./.jgit/index")); // Create a new BufferedReader
+																							// to read the file
 			String line;
 			while ((line = reader.readLine()) != null) { // Read each line of the file until the end is reached
 				indexLines.add(line); // Add the line to the ArrayList
@@ -55,15 +55,19 @@ public class StateCommit extends Command {
 	 * @return
 	 * @throws WrongFileTypeException
 	 */
-	public JGitObject buildJGitObject(File SystemFile) throws WrongFileTypeException {
-		if (SystemFile.isFile() && SystemFile.getName().endsWith(".txt")) {
-			return buildJGitTextFile(SystemFile);
-		} else if (SystemFile.isDirectory()) {
-			return buildJGitFolder(SystemFile);
-		} else {
-			throw new WrongFileTypeException("the given file isn't A folder nor a Text File!");
+	public JGitObject buildJGitObject(File systemFile) {
+		try {
+			if (systemFile.isFile() && systemFile.getName().endsWith(".txt")) {
+				return buildJGitTextFile(systemFile);
+			} else if (systemFile.isDirectory()) {
+				return buildJGitFolder(systemFile);
+			} else
+				throw new WrongFileTypeException(
+						"the given file:" + systemFile.getPath() + " isn't A folder nor a Text File!");
+		} catch (WrongFileTypeException wrongFileException) {
+			wrongFileException.printStackTrace();
 		}
-
+		return null;
 	}
 
 	/**
