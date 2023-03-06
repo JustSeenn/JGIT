@@ -28,7 +28,7 @@ public class StateCommit extends Command {
 		// read the index file into a list of files and folders
 		List<String> indexLines = new ArrayList<>();
 		try {
-			BufferedReader reader = new BufferedReader(new FileReader("./.jgit/index")); // Create a new BufferedReader
+			BufferedReader reader = new BufferedReader(new FileReader(wd.getPath(".jgit", "index").toString())); // Create a new BufferedReader
 																							// to read the file
 			String line;
 			while ((line = reader.readLine()) != null) { // Read each line of the file until the end is reached
