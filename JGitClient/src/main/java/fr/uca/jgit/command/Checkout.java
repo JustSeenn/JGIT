@@ -6,7 +6,9 @@ import fr.uca.jgit.model.Folder;
 import fr.uca.jgit.model.WorkingDirectory;
 
 import java.io.*;
+import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 
 public class Checkout extends Command{
     @Override
@@ -34,8 +36,7 @@ public class Checkout extends Command{
         // Update the current branch information before checkout
         String head = RepositoryController.getHeadHash();
         if (!head.isEmpty()){
-            Commit c = Commit.loadCommit(head);
-            c.setAsCurrentBranchState();
+            Commit.setAsCurrentBranchState(head);
         }
 
         // Checkout to given branch
@@ -46,8 +47,10 @@ public class Checkout extends Command{
 
         // Update current branch name
         try {
-            FileWriter fileWriter = new FileWriter(WorkingDirectory.getInstance().getPath(".jgit", "logs", "_current_branch_").toString(), false);
-            fileWriter.write(args[0]);
+            Files.write(WorkingDirectory.getInstance().getPath(".jgit", "logs", "_current_branch_"),
+                    args[0].getBytes(),
+                    StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING
+            );
         } catch (IOException e) {
             System.out.println("Error while updating current branch name");
             e.printStackTrace();

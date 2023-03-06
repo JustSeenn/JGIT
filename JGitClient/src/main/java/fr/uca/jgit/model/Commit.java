@@ -173,7 +173,7 @@ public class Commit implements JGitObject {
 					WorkingDirectory.getInstance().getPath(".jgit", "logs", commitHash).toString());
 
 		} catch (FileNotFoundException e) {
-			System.out.println("You must store the commit before clone");
+			System.out.println("You must store the commit before clone the commit " + commitHash + " into " + fileName);
 			return;
 		}
 
@@ -202,7 +202,7 @@ public class Commit implements JGitObject {
 	/**
 	 * Updates the reference of the current branch to point to this commit
 	 */
-	public void setAsCurrentBranchState() {
+	public static void setAsCurrentBranchState(String commitHash) {
 		File branchFile = new File(
 				WorkingDirectory.getInstance().getPath(".jgit", "logs", "_current_branch_").toString());
 		if (!branchFile.exists()) { // It means that no custom branch does not exist
@@ -213,7 +213,7 @@ public class Commit implements JGitObject {
 			BufferedReader reader = new BufferedReader(new FileReader(branchFile));
 			String current_branch = reader.readLine();
 			if (!current_branch.isEmpty()) {
-				Commit.clone(current_branch, this.hash(), true);
+				Commit.clone(current_branch, commitHash, true);
 			}
 		} catch (IOException e) {
 			throw new RuntimeException(e);
