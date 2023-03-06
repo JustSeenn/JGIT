@@ -80,21 +80,25 @@ public class StateCommit extends Command {
 	 */
 	public TextFile buildJGitTextFile(File systemTextFile) throws WrongFileTypeException {
 		TextFile jGitTextFile = new TextFile();
-		if (systemTextFile.isFile() && systemTextFile.getName().endsWith(".txt")) {
-			StringBuilder contentBuilder = new StringBuilder();
-			try (BufferedReader reader = new BufferedReader(new FileReader(systemTextFile))) {
-				String line;
-				while ((line = reader.readLine()) != null) {
-					contentBuilder.append(line);
-					contentBuilder.append(System.lineSeparator());
+		try {
+			if (systemTextFile.isFile() && systemTextFile.getName().endsWith(".txt")) {
+				StringBuilder contentBuilder = new StringBuilder();
+				try (BufferedReader reader = new BufferedReader(new FileReader(systemTextFile))) {
+					String line;
+					while ((line = reader.readLine()) != null) {
+						contentBuilder.append(line);
+						contentBuilder.append(System.lineSeparator());
+					}
+				} catch (IOException e) {
+					System.err.println("Error reading file: " + e.getMessage());
 				}
-			} catch (IOException e) {
-				System.err.println("Error reading file: " + e.getMessage());
+				String content = contentBuilder.toString();
+				jGitTextFile.setContent(content);
+			} else {
+				throw new WrongFileTypeException("the file is not a text file");
 			}
-			String content = contentBuilder.toString();
-			jGitTextFile.setContent(content);
-		} else {
-			throw new WrongFileTypeException("the file is not a text file");
+		} catch (WrongFileTypeException wrongFileTypeException) {
+			wrongFileTypeException.getStackTrace();
 		}
 		return jGitTextFile;
 	}
