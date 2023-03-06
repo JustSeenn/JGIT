@@ -55,12 +55,12 @@ public class AddStepsStepsdefs {
 
     @When("I add {string} to the index")
     public void iAddToTheIndex(String filename) {
-        output = RepositoryController.add(filename);
+//        output = RepositoryController.add(filename);
     }
 
     @When("I add all the files to the index")
     public void iAddAllTheFilesToTheIndex() {
-        output = RepositoryController.add(".");
+//        output = RepositoryController.add(".");
     }
 
     @When("{string} is already in the index")

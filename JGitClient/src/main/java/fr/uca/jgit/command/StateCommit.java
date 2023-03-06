@@ -9,7 +9,10 @@ import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
 
+import exception.WrongFileTypeException;
 import fr.uca.jgit.model.Commit;
 import fr.uca.jgit.model.Folder;
 import fr.uca.jgit.model.TextFile;
@@ -67,6 +70,93 @@ public class StateCommit extends Command {
 		}
 	}
 
+	public void commitFromIndex() throws WrongFileTypeException {
+		// read the index file into a list of files and folders
+		List<String> indexLines = new ArrayList<>();
+		try {
+			BufferedReader reader = new BufferedReader(new FileReader("./.jgit/HEAD")); // Create a new BufferedReader
+																						// to read the file
+			String line;
+			while ((line = reader.readLine()) != null) { // Read each line of the file until the end is reached
+				indexLines.add(line); // Add the line to the ArrayList
+			}
+			reader.close(); // Close the BufferedReader
+		} catch (IOException e) {
+			e.printStackTrace(); // If an exception occurs, print the stack trace
+		}
+
+		// from each stored path in our list we will call the store method recursivley
+		// we need to check the type of the files our index file (only .txt files and
+		// folders are allowed). We need to do the check because it's not done on add
+		// #TODO?
+		// if we have a folder it will create the corresponding JGit Folder object and
+		// then store it
+		// if we have a .txt file it will create the corresponding JGit TextFile and
+		// then
+		// store it
+		for (String filePath : indexLines) {
+			// create a system file from the path
+			File indexLineFile = new File(filePath);
+
+			if (indexLineFile.isFile() && indexLineFile.getName().endsWith(".txt")) {
+				TextFile jGitTextFile = buildJGitTextFile(indexLineFile);
+				if (jGitTextFile != null) {
+					jGitTextFile.store();
+				}
+			}
+
+			if (indexLineFile.isDirectory()) {
+				Folder jGitFolder = buildJGitFolder(indexLineFile);
+				if (jGitFolder != null) {
+					jGitFolder.store();
+				}
+
+			}
+		}
+
+	}
+
+	/**
+	 * from a path this function will create the corresponding JGit TextFile with
+	 * the right information
+	 * 
+	 * @param path a string to where our system's .txt file is located
+	 * @return the newly built TextFile
+	 * @throws WrongFileTypeException
+	 */
+	public TextFile buildJGitTextFile(File systemTextFile) throws WrongFileTypeException {
+		TextFile jGitTextFile = new TextFile();
+		if (systemTextFile.isFile() && systemTextFile.getName().endsWith(".txt")) {
+			StringBuilder contentBuilder = new StringBuilder();
+			try (BufferedReader reader = new BufferedReader(new FileReader(systemTextFile))) {
+				String line;
+				while ((line = reader.readLine()) != null) {
+					contentBuilder.append(line);
+					contentBuilder.append(System.lineSeparator());
+				}
+			} catch (IOException e) {
+				System.err.println("Error reading file: " + e.getMessage());
+			}
+			String content = contentBuilder.toString();
+			jGitTextFile.setContent(content);
+//			jGitStartingFolder.add(systemFileName, jGitTextFile);
+		} else {
+			throw new WrongFileTypeException("the file is not a text file");
+		}
+		return jGitTextFile;
+	}
+
+	/**
+	 * from a string path this function will create the corresponding JGit folder
+	 * with the right information
+	 * 
+	 * @param path a string to where our system's folder is located
+	 * @return the newly built JGit Folder
+	 */
+	public Folder buildJGitFolder(File systemFolder) {
+		return null;
+	}
+
 	@Override
 	public void execute(String... args) {
 		Commit c1 = new Commit();
@@ -101,7 +191,8 @@ public class StateCommit extends Command {
 
 		StringBuilder content = new StringBuilder();
 		for (fr.uca.jgit.model.Commit c : c1.getParents()) {
-			if (c != null) content.append(c.hash()).append(";");
+			if (c != null)
+				content.append(c.hash()).append(";");
 		}
 		if (content.length() > 0)
 			content.deleteCharAt(content.length() - 1);
