@@ -166,11 +166,11 @@ public class Commit implements JGitObject {
 	 * @param replace - Define if we want to replace [fileName] if the file already
 	 *                exist
 	 */
-	public void clone(String fileName, boolean replace) {
+	public static void clone(String fileName, String commitHash, boolean replace) {
 		FileInputStream input;
 		try {
 			input = new FileInputStream(
-					WorkingDirectory.getInstance().getPath(".jgit", "logs", this.hash()).toString());
+					WorkingDirectory.getInstance().getPath(".jgit", "logs", commitHash).toString());
 
 		} catch (FileNotFoundException e) {
 			System.out.println("You must store the commit before clone");
@@ -213,7 +213,7 @@ public class Commit implements JGitObject {
 			BufferedReader reader = new BufferedReader(new FileReader(branchFile));
 			String current_branch = reader.readLine();
 			if (!current_branch.isEmpty()) {
-				this.clone(current_branch, true);
+				Commit.clone(current_branch, this.hash(), true);
 			}
 		} catch (IOException e) {
 			throw new RuntimeException(e);

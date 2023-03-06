@@ -19,15 +19,12 @@ public class Branch extends Command {
 
         try {
             String head = RepositoryController.getHeadHash();
-            Commit commit;
             if (!head.isEmpty()){
-                commit = Commit.loadCommit(head);
+                Commit.clone(branchName, head, false);
+                System.out.println("Branch " + branchName + " created");
             } else {
                 System.out.println("fatal: Not a valid object in 'HEAD'");
-                return;
             }
-            commit.clone(branchName, false);
-            System.out.println("Branch " + branchName + " created");
         } catch (Exception e) {
             System.out.println("fatal: Not a valid object in 'HEAD'");
         }
