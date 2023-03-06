@@ -39,34 +39,14 @@ public class StateCommit extends Command {
 			e.printStackTrace(); // If an exception occurs, print the stack trace
 		}
 
-		// from each stored path in our list we will call the store method recursivley
-		// we need to check the type of the files our index file (only .txt files and
-		// folders are allowed). We need to do the check because it's not done on add
-		// #TODO?
-		// if we have a folder it will create the corresponding JGit Folder object and
-		// then store it
-		// if we have a .txt file it will create the corresponding JGit TextFile and
-		// then
-		// store it
 		for (String filePath : indexLines) {
 			// create a system file from the path
 			File indexLineFile = new File(filePath);
-
-			if (indexLineFile.isFile() && indexLineFile.getName().endsWith(".txt")) {
-				TextFile jGitTextFile = buildJGitTextFile(indexLineFile);
-				if (jGitTextFile != null) {
-					jGitTextFile.store();
-				}
-			}
-
-			if (indexLineFile.isDirectory()) {
-				Folder jGitFolder = buildJGitFolder(indexLineFile);
-				if (jGitFolder != null) {
-					jGitFolder.store();
-				}
+			JGitObject jGitObject = buildJGitObject(indexLineFile);
+			if (jGitObject != null) {
+				jGitObject.store();
 			}
 		}
-
 	}
 
 	/**
@@ -129,7 +109,7 @@ public class StateCommit extends Command {
 		for (File child : children) {
 			jGitFolder.add(child.getName(), (Node) buildJGitObject(child));
 		}
-		return null;
+		return jGitFolder;
 	}
 
 	@Override
