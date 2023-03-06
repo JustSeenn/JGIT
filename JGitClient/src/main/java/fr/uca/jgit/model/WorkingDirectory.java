@@ -30,6 +30,11 @@ public class WorkingDirectory {
     }
 
     public Path getPath(String... path) {
+        // Use the user.dir when the working directory path isn't defined
+        if (this.path == null) {
+            this.path = Paths.get(".");
+        }
+
         return this.path.resolve(Paths.get("", path));
     }
 
