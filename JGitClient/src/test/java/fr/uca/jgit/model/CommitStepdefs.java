@@ -58,7 +58,7 @@ public class CommitStepdefs {
 		commit1.setState(folder);
 		commit1.setDescription("commit1");
 
-		RepositoryController.commit(commit1);
+		//RepositoryController.commit(commit1);
 	}
 
 	@Then("the object folder contains the right hashed files with the right content")
@@ -69,7 +69,7 @@ public class CommitStepdefs {
 		theoriticalObjects.put(file.hash(), file.getContent() + "\n");
 		theoriticalObjects.put(folder.hash(), folder.toString());
 
-		String folderPath = ".jgit/object";
+		String folderPath = ".jgit/objects";
 		File folder = new File(folderPath);
 		File[] files = folder.listFiles();
 

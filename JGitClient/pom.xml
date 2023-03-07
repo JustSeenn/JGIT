@@ -4,7 +4,7 @@
 
     <groupId>Hogwarts</groupId>
     <artifactId>JPresqueGit</artifactId>
-    <version>WEEK1.1</version>
+    <version>WEEK3</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding> <!-- CHANGE ME IF NEEDED, other : ISO-8859-1 -->

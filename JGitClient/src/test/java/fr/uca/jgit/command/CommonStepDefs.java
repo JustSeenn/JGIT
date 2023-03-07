@@ -32,7 +32,7 @@ public class CommonStepDefs {
         Init init = new Init();
         init.execute(String.valueOf(Paths.get(String.valueOf(Path.of(System.getProperty("user.dir"))),"tmpFiles")));
     }
-    @And("a new file named {string} with content {string}")
+    @Given("a new file named {string} with content {string}")
     public void createFile(String filename, String content){
         try {
             Path filePath = wd.getPath(filename);
@@ -42,7 +42,7 @@ public class CommonStepDefs {
         }
     }
 
-    @And("we reset the working directory")
+    @Then("we reset the working directory")
     public void weResetTheWorkingDirectory() {
         wd = WorkingDirectory.getInstance();
         try {

@@ -65,7 +65,7 @@ public class Folder implements Node {
     }
 
     /**
-     * Stores the corresponding object in .git directory (file .git/object/[hash])
+     * Stores the corresponding object in .jgit directory (file .git/objects/[hash])
      **/
     @Override
     public void store() {
@@ -78,7 +78,7 @@ public class Folder implements Node {
             }
 
             // then store the current folder object
-            String filePath = WorkingDirectory.getInstance().getPath(".jgit", "object", this.hash()).toString();
+            String filePath = WorkingDirectory.getInstance().getPath(".jgit", "objects", this.hash()).toString();
 
 
             File myObj = new File(filePath);
@@ -113,13 +113,13 @@ public class Folder implements Node {
     }
 
     /**
-     * Loads the folder corresponding to the given hash (from file .git/object/[hash]).
+     * Loads the folder corresponding to the given hash (from file .git/objects/[hash]).
      **/
     public static Folder loadFolder(String hash) {
 
         Folder newFolder = new Folder();
         try {
-            File myObj = new File(WorkingDirectory.getInstance().getPath(".jgit", "object", hash).toString());
+            File myObj = new File(WorkingDirectory.getInstance().getPath(".jgit", "objects", hash).toString());
             Scanner myReader = new Scanner(myObj);
             while (myReader.hasNextLine()) {
                 String[] line = myReader.nextLine().split(";");

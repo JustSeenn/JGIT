@@ -15,7 +15,7 @@ public class RepositoryController {
 
     public static void initJGit() {
         Path jgit = Paths.get(".jgit");
-        Path objects = Paths.get(".jgit", "object");
+        Path objects = Paths.get(".jgit", "objects");
         Path logs = Paths.get(".jgit", "logs");
         Path head = Paths.get(".jgit", "HEAD");
         try {
