@@ -42,24 +42,4 @@ public class RepositoryController {
             System.err.println("Failed to create directories!" + e.getMessage());
         }
     }
-
-    /** Get the hash of the last commit from head */
-    public static String getHeadHash() {
-        String head;
-        try {
-            BufferedReader reader = new BufferedReader(new FileReader(WorkingDirectory.getInstance().getPath(".jgit", "HEAD").toString()));
-            head = reader.readLine();
-            String line;
-            while ((line = reader.readLine()) != null) {
-                head = line;
-            }
-            if (head == null) {
-                head = "";
-            }
-        } catch (IOException e) {
-            head = "";
-        }
-
-        return head;
-    }
 }

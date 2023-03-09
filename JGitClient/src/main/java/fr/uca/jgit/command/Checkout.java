@@ -34,7 +34,7 @@ public class Checkout extends Command{
             e.printStackTrace();
         }
         // Update the current branch information before checkout
-        String head = RepositoryController.getHeadHash();
+        String head = WorkingDirectory.getInstance().getHeadHash();
         if (!head.isEmpty()){
             Commit.setAsCurrentBranchState(head);
         }

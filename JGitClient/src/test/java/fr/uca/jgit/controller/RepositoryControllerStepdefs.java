@@ -85,7 +85,7 @@ public class RepositoryControllerStepdefs {
 
     @Then("The result of the merge has the content {string}")
     public void the_result_of_the_merge_has_the_content(String content) {
-        String headHash = RepositoryController.getHeadHash();
+        String headHash = WorkingDirectory.getInstance().getHeadHash();
         Commit c = Commit.loadCommit(headHash);
         TextFile f = (TextFile) c.getState().getChildren().get("file");
         if(f == null) f = (TextFile) c.getState().getChildren().get("file.cl");

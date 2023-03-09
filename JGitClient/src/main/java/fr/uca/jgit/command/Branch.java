@@ -4,6 +4,7 @@ import java.io.File;
 import java.nio.file.Paths;
 import fr.uca.jgit.controller.RepositoryController;
 import fr.uca.jgit.model.Commit;
+import fr.uca.jgit.model.WorkingDirectory;
 
 public class Branch extends Command {
     @Override
@@ -18,7 +19,7 @@ public class Branch extends Command {
         }
 
         try {
-            String head = RepositoryController.getHeadHash();
+            String head = WorkingDirectory.getInstance().getHeadHash();
             if (!head.isEmpty()){
                 Commit.clone(branchName, head, false);
                 System.out.println("Branch " + branchName + " created");
