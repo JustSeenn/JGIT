@@ -10,20 +10,20 @@ import fr.uca.jgit.model.WorkingDirectory;
 public class Init extends Command {
 
     public WorkingDirectory wd = WorkingDirectory.getInstance();
+    
     @Override
     public void execute(String... args) {
         try {
-        	String path = (args.length == 1) ? "." : args[1];
+            String path = (args.length == 1) ? "." : args[1];
             wd.setPath(Path.of(path));
-           /* if (Files.exists(Paths.get(".jgit"))) {
-                System.out.println("Directories already exist!");
-                return;
-            }*/
+
             Path newPath = wd.getPath(".jgit");
-
-
+            if(Files.exists(newPath)) {
+                System.out.println("There is already a .jgit directory.");
+                return;
+            }
             Files.createDirectories(newPath);
-            newPath = wd.getPath(".jgit", "object");
+            newPath = wd.getPath(".jgit", "objects");
             Files.createDirectories(newPath);
 
             newPath = wd.getPath(".jgit", "logs");

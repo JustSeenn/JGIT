@@ -83,7 +83,7 @@ public class CommitStepdefs {
 		theoriticalObjects.put(file.hash(), file.getContent() + "\n");
 		theoriticalObjects.put(folder.hash(), folder.toString());
 
-		String folderPath = ".jgit/object";
+		String folderPath = ".jgit/objects";
 		File folder = new File(folderPath);
 		File[] files = folder.listFiles();
 
