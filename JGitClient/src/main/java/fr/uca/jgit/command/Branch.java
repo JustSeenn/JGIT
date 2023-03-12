@@ -66,7 +66,7 @@ public class Branch extends Command {
             BufferedReader br = new BufferedReader(new FileReader(WorkingDirectory.getInstance().getPath(".jgit",  "branch_list").toString()));
             branchList = List.of(br.readLine().split(";"));
         } catch (FileNotFoundException e){
-            System.out.println("No branch list file found");
+            // System.out.println("No branch list file found");
         }
         return branchList.contains(branch);
     }

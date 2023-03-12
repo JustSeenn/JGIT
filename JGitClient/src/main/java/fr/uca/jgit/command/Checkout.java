@@ -1,18 +1,14 @@
 package fr.uca.jgit.command;
 
 import fr.uca.jgit.model.Commit;
-import fr.uca.jgit.model.Folder;
 import fr.uca.jgit.model.WorkingDirectory;
 
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.List;
 
 public class Checkout extends Command{
     @Override
@@ -26,15 +22,15 @@ public class Checkout extends Command{
 
         // Update the current branch information before checkout if the branch is custom branch (not is commit)
         try {
-            Path currentBranchPath = WorkingDirectory.getInstance().getPath(".jgit", "logs", "_current_branch_");
-            if (Files.exists(currentBranchPath)){
-                String currentBranch = (new BufferedReader(new FileReader(currentBranchPath.toString()))).readLine().trim();
+            Path _current_branch_ = WorkingDirectory.getInstance().getPath(".jgit", "logs", "_current_branch_");
+            if (Files.exists(_current_branch_)){
+                String currentBranchName = (new BufferedReader(new FileReader(_current_branch_.toString()))).readLine().trim();
 
-                if (Branch.isCustomBranch(currentBranch)){
+                if (Branch.isCustomBranch(currentBranchName)){
                     String head = WorkingDirectory.getInstance().getHeadHash();
                     if (!head.isEmpty()){
-                        Path current_branch = WorkingDirectory.getInstance().getPath(".jgit", "logs", "_current_branch_");
-                        Files.writeString(current_branch,
+                        Path currentBranchPath = WorkingDirectory.getInstance().getPath(".jgit", "logs", currentBranchName);
+                        Files.writeString(currentBranchPath,
                                 head,
                                 StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING
                         );
