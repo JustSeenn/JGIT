@@ -9,6 +9,7 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+import java.util.List;
 
 public class Checkout extends Command{
     @Override
@@ -33,16 +34,25 @@ public class Checkout extends Command{
             System.err.println("Failed to read the last line of the file.");
             e.printStackTrace();
         }
-        // Update the current branch information before checkout
-        String head = WorkingDirectory.getInstance().getHeadHash();
-        if (!head.isEmpty()){
-            Commit.setAsCurrentBranchState(head);
+
+        // Update the current branch information before checkout if the branch is custom branch (not is commit)
+        try {
+            BufferedReader br = new BufferedReader(new FileReader(WorkingDirectory.getInstance().getPath(".jgit",  "branch_list").toString()));
+            List<String> branchList = List.of(br.readLine().split(";"));
+            if (branchList.contains(args[0])){
+                String head = WorkingDirectory.getInstance().getHeadHash();
+                if (!head.isEmpty()){
+                    Commit.setAsCurrentBranchState(head);
+                }
+            }
+        } catch (IOException e) {
+            System.out.println("Warning: Error while updating the list of branch. No take this in consideration if you check out a commit");
         }
 
         // Checkout to given branch
         Commit commit = Commit.loadCommit(args[0]);
         commit.setState(Folder.loadFolder(lastLine));
-        commit.checkout();
+        Commit.restore(lastLine);
         WorkingDirectory.getInstance().setCurrentCommit(commit);
 
         // Update current branch name

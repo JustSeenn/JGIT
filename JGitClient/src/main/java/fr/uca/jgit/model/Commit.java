@@ -12,9 +12,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 public class Commit implements JGitObject {
 	private final List<Commit> parents;
@@ -220,4 +218,35 @@ public class Commit implements JGitObject {
 		}
 	}
 
+	/**
+	 * Restore the state of the files at the given commit
+	 *
+	 * Follow the state of the commit recursively from the current commit [hash]
+	 * to the first parent and restore the last state of each file.
+	 *
+	 * @param hash the hash of the commit to restore
+	 */
+	public static void restore(String hash){
+		// todo: restore recursively by including the parent state
+		// todo: checkout
+
+		String fileName, objectName;
+		Map<String, String> children = new HashMap<>(); // list of <Filename, Corresponding_object>
+		TextFile tmpFile;
+		try (BufferedReader br = new BufferedReader(new FileReader(WorkingDirectory.getInstance().getPath(".jgit", "objects", hash).toString()))) {
+			String line;
+			while ((line = br.readLine()) != null) {
+				String[] tokens = line.split(";");
+				fileName = tokens[0].trim();
+				objectName = tokens[2].trim();
+				children.put(fileName, objectName);
+
+				// restore the file
+				tmpFile = TextFile.loadFile(objectName);
+				tmpFile.restore(fileName);
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 }

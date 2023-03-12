@@ -1,7 +1,11 @@
 package fr.uca.jgit.command;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
+
 import fr.uca.jgit.controller.RepositoryController;
 import fr.uca.jgit.model.Commit;
 import fr.uca.jgit.model.WorkingDirectory;
@@ -16,6 +20,17 @@ public class Branch extends Command {
         if (branchFile.exists()) {
             System.out.println("fatal: A branch named " + branchName + " already exists.");
             return;
+        }
+
+        // Update a list of branch
+        try {
+            Files.write(WorkingDirectory.getInstance().getPath(".jgit", "branch_list"),
+                    (args[0]+";").getBytes(),
+                    StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING
+            );
+        } catch (IOException e) {
+            System.out.println("Error while updating the list of branch");
+            e.printStackTrace();
         }
 
         try {
