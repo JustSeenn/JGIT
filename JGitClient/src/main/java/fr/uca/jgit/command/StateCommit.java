@@ -24,7 +24,14 @@ public class StateCommit extends Command {
 
 	public WorkingDirectory wd = WorkingDirectory.getInstance();
 
-	public void commitFromIndex() throws WrongFileTypeException {
+	/**
+	 * Store the state of the files in the index
+	 * @return The folder that contain the liste of the files concerned by this commit
+	 * @throws WrongFileTypeException
+	 */
+	public Folder commitFromIndex() throws WrongFileTypeException {
+		Folder state = new Folder();
+
 		// read the index file into a list of files and folders
 		List<String> indexLines = new ArrayList<>();
 		try {
@@ -45,8 +52,11 @@ public class StateCommit extends Command {
 			JGitObject jGitObject = buildJGitObject(indexLineFile);
 			if (jGitObject != null) {
 				jGitObject.store();
+				state.add(filePath, (Node) jGitObject);
 			}
 		}
+
+		return state;
 	}
 
 	/**
@@ -57,6 +67,7 @@ public class StateCommit extends Command {
 	 */
 	public JGitObject buildJGitObject(File systemFile) {
 		try {
+			// todo(fix): The text file can't be end with ".txt"
 			if (systemFile.isFile() && systemFile.getName().endsWith(".txt")) {
 				return buildJGitTextFile(systemFile);
 			} else if (systemFile.isDirectory()) {
@@ -141,7 +152,7 @@ public class StateCommit extends Command {
 		}
 //		populateWithChildren(wdPath, jGitRootDir);
 		try {
-			commitFromIndex();
+			jGitRootDir = commitFromIndex();
 		} catch (WrongFileTypeException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
