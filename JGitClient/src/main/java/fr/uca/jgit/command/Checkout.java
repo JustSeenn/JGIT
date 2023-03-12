@@ -86,6 +86,7 @@ public class Checkout extends Command{
                 headContent.append(args[0]);
             } else {
                 // todo(fix): the hash of branch instead of name
+                headContent.append(args[0]);
             }
         } catch (IOException e) {
             headContent.append(args[0]);
