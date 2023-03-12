@@ -16,7 +16,7 @@ public class Merge extends Command {
     public void execute(String... args) {
         // Check if there is a .cl file in the working directory
         Commit c2 = Commit.loadCommit(args[0]);
-        File[] files = new File(String.valueOf(wd.getPath())).listFiles();
+       File[] files = new File(String.valueOf(wd.getPath())).listFiles();
         if (files != null) {
             for (File file : files) {
                 if (file.isFile()) {
@@ -33,7 +33,7 @@ public class Merge extends Command {
         c1.addParent(c2);
         c1.store();
         StateCommit c3 = new StateCommit();
-        c3.execute("Merge commit between " + c1.hash() + " and " + c2.hash());
+        c3.execute("Merge commit between " + c1.hash() + " and " + args[0]);
 
 
         File workingDirectory = new File(wd.getPath("result").toString() );

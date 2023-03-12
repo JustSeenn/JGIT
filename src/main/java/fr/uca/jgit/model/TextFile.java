@@ -3,9 +3,7 @@ package fr.uca.jgit.model;
 import java.io.*;
 import java.nio.file.Paths;
 import java.security.MessageDigest;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 import java.nio.file.Path;
 
@@ -106,63 +104,75 @@ public class TextFile implements Node {
         }
     }
 
-    /**
-     * Merges the given file with this file.
-     **/
-    @Override
-    public Node merge(Node other) {
-        TextFile mergeFile = new TextFile();
-        TextFile otherFile = (TextFile) other;
-        List<String> file1Lines = List.of(this.content.split("\n"));
-        List<String> file2Lines = List.of(otherFile.content.split("\n"));
-        List<String> ls = mergeFiles(file1Lines, file2Lines);
-        StringBuilder sb = new StringBuilder();
-        for (String s : ls) {
-            sb.append(s).append("\n");
+
+    public String merge(List<String>  rightLines, List<String>  originalLines) {
+
+        List<String> leftLines = List.of(this.getContent().split("\n"));
+
+
+        List<String> mergedLines = new ArrayList<>();
+        for (int i = 0; i < originalLines.size(); i++) {
+            String originalLine = originalLines.get(i);
+            String leftLine = getLineWithClosestMatch(originalLine, leftLines);
+            String rightLine = getLineWithClosestMatch(originalLine, rightLines);
+
+            if (leftLine.equals(rightLine)) {
+                mergedLines.add(leftLine);
+            } else if (originalLine.equals(leftLine)) {
+                mergedLines.add(rightLine);
+            } else if (originalLine.equals(rightLine)) {
+                mergedLines.add(leftLine);
+            } else {
+                mergedLines.add("<<<<<<<<<");
+                mergedLines.add(leftLine);
+                mergedLines.add("===========");
+                mergedLines.add(rightLine);
+                mergedLines.add(">>>>>>>>>");
+            }
         }
 
-        mergeFile.content = sb.toString();
-        mergeFile.content = mergeFile.content.substring(0, mergeFile.content.length() - 1);
-        return mergeFile;
+        return String.join("\n", mergedLines) + "\n";
     }
 
-    public static List<String> mergeFiles(List<String> file1, List<String> file2) {
-        List<String> merged = new ArrayList<>();
-        int[][] dp = new int[file1.size() + 1][file2.size() + 1];
-        for (int i = 0; i <= file1.size(); i++) {
+    private static String getLineWithClosestMatch(String target, List<String> lines) {
+        int minDistance = Integer.MAX_VALUE;
+        String closestLine = null;
+
+        for (String line : lines) {
+            int distance = getLevenshteinDistance(target, line);
+            if (distance < minDistance) {
+                minDistance = distance;
+                closestLine = line;
+            }
+        }
+
+        return closestLine;
+    }
+
+    private static int getLevenshteinDistance(String s1, String s2) {
+        int m = s1.length();
+        int n = s2.length();
+        int[][] dp = new int[m + 1][n + 1];
+
+        for (int i = 1; i <= m; i++) {
             dp[i][0] = i;
         }
-        for (int j = 0; j <= file2.size(); j++) {
+
+        for (int j = 1; j <= n; j++) {
             dp[0][j] = j;
         }
-        for (int i = 1; i <= file1.size(); i++) {
-            for (int j = 1; j <= file2.size(); j++) {
-                if (file1.get(i - 1).equals(file2.get(j - 1))) {
-                    dp[i][j] = dp[i - 1][j - 1];
-                } else {
-                    dp[i][j] = Math.min(dp[i - 1][j], dp[i][j - 1]) + 1;
-                }
+
+        for (int i = 1; i <= m; i++) {
+            for (int j = 1; j <= n; j++) {
+                int cost = s1.charAt(i - 1) == s2.charAt(j - 1) ? 0 : 1;
+                dp[i][j] = Math.min(Math.min(dp[i - 1][j] + 1, dp[i][j - 1] + 1), dp[i - 1][j - 1] + cost);
             }
         }
-        int i = file1.size();
-        int j = file2.size();
-        while (i > 0 || j > 0) {
-            if (i > 0 && j > 0 && file1.get(i - 1).equals(file2.get(j - 1))) {
-                merged.add(0, file1.get(i - 1));
-                i--;
-                j--;
-            } else if (i > 0 && dp[i][j] == dp[i - 1][j] + 1) {
-                merged.add(0, "<<<<<<< HEAD");
-                merged.add(0, file1.get(i - 1));
-                merged.add(0, "=======");
-                i--;
-            } else {
-                merged.add(0, file2.get(j - 1));
-                j--;
-            }
-        }
-        return merged;
+
+        return dp[m][n];
     }
+
+
 
     public TextFile clone() {
         TextFile clone = new TextFile();
