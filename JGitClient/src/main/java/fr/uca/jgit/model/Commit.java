@@ -158,67 +158,6 @@ public class Commit implements JGitObject {
 	}
 
 	/**
-	 * Duplicate the commit information in the new [fileName] to represent a custom
-	 * branch.
-	 * 
-	 * @param replace - Define if we want to replace [fileName] if the file already
-	 *                exist
-	 */
-	public static void clone(String fileName, String commitHash, boolean replace) {
-		FileInputStream input;
-		try {
-			input = new FileInputStream(
-					WorkingDirectory.getInstance().getPath(".jgit", "logs", commitHash).toString());
-
-		} catch (FileNotFoundException e) {
-			System.out.println("You must store the commit before clone the commit " + commitHash + " into " + fileName);
-			return;
-		}
-
-		FileOutputStream output;
-		try {
-			File outFile = new File(Paths.get(".jgit", "logs", fileName).toString());
-			if (outFile.exists() && !replace) {
-				System.out.println("The file " + fileName + "already exist");
-				return;
-			}
-			outFile.createNewFile();
-			output = new FileOutputStream(outFile);
-
-			byte[] buffer = new byte[1024];
-			int length;
-			while ((length = input.read(buffer)) > 0) {
-				output.write(buffer, 0, length);
-			}
-			input.close();
-			output.close();
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
-	}
-
-	/**
-	 * Updates the reference of the current branch to point to this commit
-	 */
-	public static void setAsCurrentBranchState(String commitHash) {
-		File branchFile = new File(
-				WorkingDirectory.getInstance().getPath(".jgit", "logs", "_current_branch_").toString());
-		if (!branchFile.exists()) { // It means that no custom branch does not exist
-			return;
-		}
-
-		try {
-			BufferedReader reader = new BufferedReader(new FileReader(branchFile));
-			String current_branch = reader.readLine();
-			if (!current_branch.isEmpty()) {
-				Commit.clone(current_branch, commitHash, true);
-			}
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
-	}
-
-	/**
 	 * Restore the state of the files at the given commit
 	 *
 	 * Follow the state of the commit recursively from the current commit [hash]
@@ -228,12 +167,28 @@ public class Commit implements JGitObject {
 	 */
 	public static void restore(String hash){
 		// todo: restore recursively by including the parent state
-		// todo: checkout
+		// todo: checkout (remove file)
+
+		// Get the hash for the state of repo
+		String lastLine = "";
+		try {
+			BufferedReader reader = new BufferedReader(new FileReader(new File(WorkingDirectory.getInstance().getPath(".jgit", "logs", hash).toString())));
+			String line;
+			while ((line = reader.readLine()) != null) {
+				lastLine = line;
+			}
+			reader.close();
+		} catch (Exception e) {
+			System.err.println("Failed to read the last line of the file.");
+			e.printStackTrace();
+		}
 
 		String fileName, objectName;
 		Map<String, String> children = new HashMap<>(); // list of <Filename, Corresponding_object>
 		TextFile tmpFile;
-		try (BufferedReader br = new BufferedReader(new FileReader(WorkingDirectory.getInstance().getPath(".jgit", "objects", hash).toString()))) {
+		try {
+			BufferedReader br = new BufferedReader(new FileReader(WorkingDirectory.getInstance().getPath(".jgit", "objects", lastLine).toString()));
+
 			String line;
 			while ((line = br.readLine()) != null) {
 				String[] tokens = line.split(";");

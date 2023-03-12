@@ -1,10 +1,12 @@
 package fr.uca.jgit.command;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+import java.util.ArrayList;
+import java.util.List;
 
 import fr.uca.jgit.controller.RepositoryController;
 import fr.uca.jgit.model.Commit;
@@ -26,7 +28,7 @@ public class Branch extends Command {
         try {
             Files.write(WorkingDirectory.getInstance().getPath(".jgit", "branch_list"),
                     (args[0]+";").getBytes(),
-                    StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING
+                    StandardOpenOption.CREATE, StandardOpenOption.APPEND
             );
         } catch (IOException e) {
             System.out.println("Error while updating the list of branch");
@@ -36,7 +38,12 @@ public class Branch extends Command {
         try {
             String head = WorkingDirectory.getInstance().getHeadHash();
             if (!head.isEmpty()){
-                Commit.clone(branchName, head, false);
+                Path current_branch = WorkingDirectory.getInstance().getPath(".jgit", "logs", branchName);
+                Files.writeString(current_branch,
+                        head,
+                        StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING
+                );
+
                 System.out.println("Branch " + branchName + " created");
             } else {
                 System.out.println("fatal: Not a valid object in 'HEAD'");
@@ -45,5 +52,22 @@ public class Branch extends Command {
             System.out.println("fatal: Not a valid object in 'HEAD'");
         }
 
+    }
+
+    /**
+     * Check if the given branch is a current branch
+     * @param branch is the name of the branch. Can be hash or name
+     * @return true if the current branch is not a simple commit else false
+     */
+    public static boolean isCustomBranch(String branch) throws IOException {
+        List<String> branchList = new ArrayList<>();
+
+        try {
+            BufferedReader br = new BufferedReader(new FileReader(WorkingDirectory.getInstance().getPath(".jgit",  "branch_list").toString()));
+            branchList = List.of(br.readLine().split(";"));
+        } catch (FileNotFoundException e){
+            System.out.println("No branch list file found");
+        }
+        return branchList.contains(branch);
     }
 }

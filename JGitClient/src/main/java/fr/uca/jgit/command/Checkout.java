@@ -1,6 +1,5 @@
 package fr.uca.jgit.command;
 
-import fr.uca.jgit.controller.RepositoryController;
 import fr.uca.jgit.model.Commit;
 import fr.uca.jgit.model.Folder;
 import fr.uca.jgit.model.WorkingDirectory;
@@ -19,51 +18,44 @@ public class Checkout extends Command{
     @Override
     public void execute(String... args) {
         // Check if the branch exists
-        File branchFile = new File(Paths.get(".jgit", "logs", args[0]).toString());
+        File branchFile = new File(WorkingDirectory.getInstance().getPath(".jgit", "logs", args[0]).toString());
         if (!branchFile.exists()) {
             System.out.println("Branch " + args[0] + " does not exist");
             return;
         }
 
-        // Get the hash for the state of repo
-        String lastLine = "";
-        try {
-            BufferedReader reader = new BufferedReader(new FileReader(branchFile));
-            String line;
-            while ((line = reader.readLine()) != null) {
-                lastLine = line;
-            }
-            reader.close();
-        } catch (Exception e) {
-            System.err.println("Failed to read the last line of the file.");
-            e.printStackTrace();
-        }
-
         // Update the current branch information before checkout if the branch is custom branch (not is commit)
         try {
-            String currentBranch = (new BufferedReader(new FileReader(WorkingDirectory.getInstance().getPath(".jgit", "logs", "_current_branch_").toString()))).readLine().trim();
+            Path currentBranchPath = WorkingDirectory.getInstance().getPath(".jgit", "logs", "_current_branch_");
+            if (Files.exists(currentBranchPath)){
+                String currentBranch = (new BufferedReader(new FileReader(currentBranchPath.toString()))).readLine().trim();
 
-            if (isCustomBranch(currentBranch)){
-                String head = WorkingDirectory.getInstance().getHeadHash();
-                if (!head.isEmpty()){
-                    Commit.setAsCurrentBranchState(head);
+                if (Branch.isCustomBranch(currentBranch)){
+                    String head = WorkingDirectory.getInstance().getHeadHash();
+                    if (!head.isEmpty()){
+                        Path current_branch = WorkingDirectory.getInstance().getPath(".jgit", "logs", "_current_branch_");
+                        Files.writeString(current_branch,
+                                head,
+                                StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING
+                        );
+                    }
                 }
             }
+
         } catch (IOException e) {
-            System.out.println("Warning: Error while updating the list of branch. No take this in consideration if you check out a commit");
+            System.out.println("Warning: Error while updating the current branch information.");
             e.printStackTrace();
         }
 
         // Checkout to given branch
-        Commit commit = Commit.loadCommit(args[0]);
-        commit.setState(Folder.loadFolder(lastLine));
-        Commit.restore(lastLine);
+        Commit commit = Commit.loadCommit(toHash(args[0]));
+        Commit.restore(toHash(args[0]));
         WorkingDirectory.getInstance().setCurrentCommit(commit);
 
         // Update current branch name
         try {
             Path current_branch = WorkingDirectory.getInstance().getPath(".jgit", "logs", "_current_branch_");
-            if (isCustomBranch(args[0])){
+            if (Branch.isCustomBranch(args[0])){
                 Files.write(current_branch,
                         args[0].getBytes(),
                         StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING
@@ -81,16 +73,7 @@ public class Checkout extends Command{
 
         StringBuilder headContent = new StringBuilder();
         headContent.append(LocalTime.now().toString()).append("-").append(LocalDate.now()).append("\n");
-        try {
-            if (! isCustomBranch(args[0])){
-                headContent.append(args[0]);
-            } else {
-                // todo(fix): the hash of branch instead of name
-                headContent.append(args[0]);
-            }
-        } catch (IOException e) {
-            headContent.append(args[0]);
-        }
+        headContent.append(toHash(args[0]));
 
         try {
             Files.write(headPath, headContent.toString().getBytes(), StandardOpenOption.CREATE,
@@ -102,18 +85,19 @@ public class Checkout extends Command{
     }
 
     /**
-     * Check if the current branch is a current branch
-     * @return true if the current branch is not a simple commit else false
+     * @param name
+     * @return the commit corresponding to name
      */
-    private boolean isCustomBranch(String branch) throws IOException {
-        List<String> branchList = new ArrayList<>();
-
+    private String toHash(String name){
+        // Get object corresponding to the commit
         try {
-            BufferedReader br = new BufferedReader(new FileReader(WorkingDirectory.getInstance().getPath(".jgit",  "branch_list").toString()));
-            branchList = List.of(br.readLine().split(";"));
-        } catch (FileNotFoundException e){
-            System.out.println("No branch list file found");
+            if (!Branch.isCustomBranch(name)){
+                return name;
+            } else {
+                return (new BufferedReader(new FileReader(WorkingDirectory.getInstance().getPath(".jgit", "logs", name).toString()))).readLine().trim();
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
-        return branchList.contains(branch);
     }
 }
