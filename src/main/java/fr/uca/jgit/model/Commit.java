@@ -114,11 +114,12 @@ public class Commit implements JGitObject {
                     newCommit.parents.add(Commit.loadCommit(s));
                 }
             }
-            String temp = "";
+            ArrayList<String> temp = new ArrayList<>();
             while (myReader.hasNextLine()) {
-                temp = myReader.nextLine();
+                temp.add(myReader.nextLine());
             }
-            newCommit.state = Folder.loadFolder(temp);
+            newCommit.description = temp.get(temp.size() - 2);
+            newCommit.state = Folder.loadFolder(temp.get(temp.size() - 1));
 
             myReader.close();
         } catch (FileNotFoundException e) {
