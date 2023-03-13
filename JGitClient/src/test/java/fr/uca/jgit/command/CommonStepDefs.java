@@ -29,8 +29,8 @@ public class CommonStepDefs {
     }
     @Given("a repository .jgit")
     public void a_repository_jgit() {
-        Init init = new Init();
-        init.execute(String.valueOf(Paths.get(String.valueOf(Path.of(System.getProperty("user.dir"))),"tmpFiles")));
+        new Init().execute("", "tmpFiles");
+
     }
     @Given("a new file named {string} with content {string}")
     public void createFile(String filename, String content){

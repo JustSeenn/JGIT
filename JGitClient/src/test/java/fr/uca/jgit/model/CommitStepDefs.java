@@ -19,13 +19,13 @@ import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import io.cucumber.java.en.And;
 
-public class CommitStepdefs {
+public class CommitStepDefs {
 	Folder folder;
 	TextFile file;
 	TextFile file2;
 	Commit commit1;
 
-	public CommitStepdefs() {
+	public CommitStepDefs() {
 
 	}
 
