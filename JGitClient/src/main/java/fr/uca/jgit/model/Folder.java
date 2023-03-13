@@ -182,15 +182,15 @@ public class Folder implements Node,  Cloneable {
                         sb.append(s).append("\n");
                     }
 
-                    TextFile temp = new TextFile();
-                    temp.setContent(sb.toString());
-                    temp.setContent(temp.getContent().substring(0, temp.getContent().length() - 1));
-                    temp.store();
+                    TextFile newFile = new TextFile();
+                    newFile.setContent(sb.toString());
+                    newFile.setContent(newFile.getContent().substring(0, newFile.getContent().length() - 1));
+                    newFile.store();
 
-                    if (temp.getContent().contains("<<<<<<<"))
-                        newFolder.children.put(entry.getKey() + ".cl", temp);
+                    if (newFile.getContent().contains("<<<<<<<"))
+                        newFolder.children.put(entry.getKey() + ".cl", newFile);
                     else
-                        newFolder.children.put(entry.getKey(), temp);
+                        newFolder.children.put(entry.getKey(), newFile);
                 } else {
                     newFolder.children.put(entry.getKey(), entry.getValue());
                 }
