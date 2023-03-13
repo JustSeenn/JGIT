@@ -17,7 +17,7 @@ import javax.inject.Inject;
 import static org.junit.Assert.assertEquals;
 
 
-public class RepositoryControllerStepdefs {
+public class MergeStepDefs {
     TextFile file;
     Folder folder;
     Commit commit1;
@@ -28,7 +28,7 @@ public class RepositoryControllerStepdefs {
 
 
 
-    public RepositoryControllerStepdefs(){}
+    public MergeStepDefs(){}
 
 
     @Given("a file named file with the content {string}")

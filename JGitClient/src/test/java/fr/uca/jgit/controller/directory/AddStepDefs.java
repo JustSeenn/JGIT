@@ -1,13 +1,11 @@
 package fr.uca.jgit.controller.directory;
 
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
 
 import javax.inject.Inject;
 
-import fr.uca.jgit.Main;
 import fr.uca.jgit.model.WorkingDirectory;
 import io.cucumber.java.en.*;
 
@@ -18,7 +16,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 
-public class AddStepdefs {
+public class AddStepDefs {
 
     private File index;
 
