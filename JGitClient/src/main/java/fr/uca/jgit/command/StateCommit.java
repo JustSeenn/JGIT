@@ -35,15 +35,14 @@ public class StateCommit extends Command {
 		// read the index file into a list of files and folders
 		List<String> indexLines = new ArrayList<>();
 		try {
-			BufferedReader reader = new BufferedReader(new FileReader(wd.getPath(".jgit", "index").toString())); // Create a new BufferedReader
-																							// to read the file
+			BufferedReader reader = new BufferedReader(new FileReader(wd.getPath(".jgit", "index").toString()));
 			String line;
-			while ((line = reader.readLine()) != null) { // Read each line of the file until the end is reached
-				indexLines.add(line); // Add the line to the ArrayList
+			while ((line = reader.readLine()) != null) {
+				indexLines.add(line);
 			}
-			reader.close(); // Close the BufferedReader
+			reader.close();
 		} catch (IOException e) {
-			e.printStackTrace(); // If an exception occurs, print the stack trace
+			e.printStackTrace();
 		}
 
 		for (String filePath : indexLines) {
@@ -61,7 +60,7 @@ public class StateCommit extends Command {
 
 	/**
 	 * 
-	 * @param SystemFile
+	 * @param systemFile
 	 * @return
 	 * @throws WrongFileTypeException
 	 */

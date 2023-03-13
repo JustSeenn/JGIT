@@ -45,7 +45,6 @@ public class CheckoutStepDefs {
         Path currentBranchFile = logsDir.resolve("_current_branch_");
 
         if (Files.notExists(currentBranchFile)) {
-            // It's mean, the user don't check out any branch before
             throw new AssertionError(String.format("No current branch, expected to be %s", branchName));
         }
 
