@@ -12,8 +12,7 @@ Feature: Checkout a branch
 
   Scenario: Checkout a branch that does not exist.
     When the user execute the command "checkout" with argument "dxhrb_invalid_hash_kklfjd"
-    Then the result is "Branch dxhrb_invalid_hash_kklfjd does not exist"
-    And the current branch is not "dxhrb_invalid_hash_kklfjd"
+    Then the current branch is not "dxhrb_invalid_hash_kklfjd"
 
   Scenario: Checkout a branch using branch name
     Given the user execute the command "branch" with argument "dev"

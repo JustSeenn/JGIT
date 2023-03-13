@@ -19,7 +19,7 @@ public class CommandStepDefs {
     }
 
     @When("the user execute the command {string} with argument {string}")
-    @When("the user want to execute the command {string} with argument {string}")
+    @When("the user want to execute the command {string} with argument {string}") // todo: to be removed
     public void executeCommand(String command, String argument) {
         try {
             args[0] = command;
