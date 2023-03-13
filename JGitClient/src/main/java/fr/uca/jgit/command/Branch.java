@@ -8,13 +8,16 @@ import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.List;
 
-import fr.uca.jgit.controller.RepositoryController;
-import fr.uca.jgit.model.Commit;
 import fr.uca.jgit.model.WorkingDirectory;
 
 public class Branch extends Command {
     @Override
     public void execute(String... args) {
+        if (args.length == 0){
+            System.out.println("Argument required");
+            return;
+        }
+
         String branchName = args[0];
 
         // Check if the branch exists
@@ -65,9 +68,7 @@ public class Branch extends Command {
         try {
             BufferedReader br = new BufferedReader(new FileReader(WorkingDirectory.getInstance().getPath(".jgit",  "branch_list").toString()));
             branchList = List.of(br.readLine().split(";"));
-        } catch (FileNotFoundException e){
-            // System.out.println("No branch list file found");
-        }
+        } catch (FileNotFoundException ignored){}
         return branchList.contains(branch);
     }
 }
