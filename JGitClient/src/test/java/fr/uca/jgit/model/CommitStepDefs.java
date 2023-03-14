@@ -46,13 +46,13 @@ public class CommitStepDefs {
 		try {
 			// create needed dirs
 			Path filePath = Path.of(filePathString);
-			Path parentPath = Path.of(".tmp", filePath.getParent().toString());
+			Path parentPath = Path.of("tmpFiles", filePath.getParent().toString());
 			if (parentPath != null) {
 				Files.createDirectories(parentPath);
 			}
 
 			// create .txt file
-			File textFile = new File(".tmp/" + filePathString);
+			File textFile = new File("tmpFiles/" + filePathString);
 			textFile.createNewFile();
 
 			// set .txt file contents
