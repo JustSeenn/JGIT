@@ -21,6 +21,16 @@ public class InitStepDefs {
     @Inject
     WorkingDirectory wd;
 
+    @Given("a specific working directory")
+    public void a_specific_working_directory() {
+        wd = WorkingDirectory.getInstance();
+        Path path = Paths.get("init_tmp_files");
+        if(!path.toFile().exists()){
+            path.toFile().mkdir();
+        }
+        wd.setPath(path);
+    }
+
     @Then("a new jgit repository is created")
     public void a_new_jgit_repository_is_created() {
         Path jgit = WorkingDirectory.getInstance().getPath(".jgit");
@@ -60,9 +70,8 @@ public class InitStepDefs {
     @Then("no new jgit repository is created")
     public void no_new_jgit_repository_is_created() throws IOException {
         wd = WorkingDirectory.getInstance();
-        Path path = Paths.get("tmpFiles");
-        wd.setPath(path);
         assertFalse(Files.isDirectory(wd.getPath(".jgit")));
+        wd.setPath(Paths.get("tmpFiles"));
     }
 }
     

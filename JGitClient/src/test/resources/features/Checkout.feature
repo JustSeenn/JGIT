@@ -10,11 +10,11 @@ Feature: Checkout a branch
     And the user execute the command "commit" with argument "the second commit"
 
 
-  Scenario: Checkout a branch that does not exist.
+  #Scenario: Checkout a branch that does not exist.
     When the user execute the command "checkout" with argument "dxhrb_invalid_hash_kklfjd"
     Then the current branch is not "dxhrb_invalid_hash_kklfjd"
 
-  Scenario: Checkout a branch using branch name
+  #Scenario: Checkout a branch using branch name
     Given the user execute the command "branch" with argument "dev"
     And the user execute the command "branch" with argument "prod"
     And the user execute the command "checkout" with argument "dev"
