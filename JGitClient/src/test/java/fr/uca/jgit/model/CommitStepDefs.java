@@ -46,7 +46,7 @@ public class CommitStepDefs {
 		try {
 			// create needed dirs
 			Path filePath = Path.of(filePathString);
-			Path parentPath = Path.of(".tmp/" + filePath.getParent());
+			Path parentPath = Path.of(".tmp", filePath.getParent().toString());
 			if (parentPath != null) {
 				Files.createDirectories(parentPath);
 			}
@@ -122,7 +122,7 @@ public class CommitStepDefs {
 	@And("the HEAD file has been correctly updated")
 	public void headUpdated() throws Throwable {
 		// check that the HEAD file is updated correctly
-		Path HEADPath = Path.of(".jgit/HEAD");
+		Path HEADPath = Path.of(".jgit", "HEAD");
 
 		// Read the contents of the file into a list of strings
 		List<String> HEADLines = Files.readAllLines(HEADPath, StandardCharsets.UTF_8);
