@@ -11,6 +11,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 import exception.WrongFileTypeException;
 import fr.uca.jgit.model.Commit;
@@ -23,6 +24,8 @@ import fr.uca.jgit.model.WorkingDirectory;
 public class StateCommit extends Command {
 
 	public WorkingDirectory wd = WorkingDirectory.getInstance();
+	
+	private static final Logger logger = Logger.getLogger(StateCommit.class.getName());
 
 	/**
 	 * Store the state of the files in the index
@@ -75,7 +78,7 @@ public class StateCommit extends Command {
 				throw new WrongFileTypeException(
 						"the given file:" + systemFile.getPath() + " isn't A folder nor a Text File!");
 		} catch (WrongFileTypeException wrongFileException) {
-			wrongFileException.printStackTrace();
+			logger.info(wrongFileException.getMessage());
 		}
 		return null;
 	}
@@ -108,7 +111,7 @@ public class StateCommit extends Command {
 				throw new WrongFileTypeException("the file is not a text file");
 			}
 		} catch (WrongFileTypeException wrongFileTypeException) {
-			wrongFileTypeException.getStackTrace();
+			logger.info(wrongFileTypeException.getMessage());
 		}
 		return jGitTextFile;
 	}
@@ -186,8 +189,7 @@ public class StateCommit extends Command {
 			wd.addCommit(c1.hash(), c1);
 			wd.setCurrentCommit(c1);
 		} catch (IOException e) {
-			System.out.println("An error occurred while writing to file.");
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 	}
 

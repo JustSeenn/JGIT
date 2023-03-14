@@ -24,7 +24,6 @@ public class CommitStepDefs {
 	TextFile file2;
 	Commit commit1;
 
-
 	public CommitStepDefs() {
 
 	}
