@@ -15,9 +15,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
-public class Folder implements Node {
+public class Folder implements Node,  Cloneable {
     // Mapping Name -> Node
-    private final Map<String, Node> children;
+    private Map<String, Node> children;
 
     public Folder() {
         children = new HashMap<>();
@@ -155,18 +155,42 @@ public class Folder implements Node {
         }
     }
 
-    @Override
+
     public Node merge(Node other) {
         Folder newFolder = new Folder();
         for (Map.Entry<String, Node> entry : children.entrySet()) {
             if (other instanceof Folder) {
                 if (((Folder) other).children.containsKey(entry.getKey())) {
-                    TextFile temp = (TextFile) entry.getValue().merge(((Folder) other).children.get(entry.getKey()));
-                    temp.store();
-                    if (temp.getContent().contains("<<<<<<<"))
-                        newFolder.children.put(entry.getKey() + ".cl", temp);
+
+                    List<String>  otherValue = List.of(
+                            ((TextFile) ((Folder) other)
+                                    .children.get(
+                                            entry.getKey()
+                                    ))
+                                    .getContent()
+                                    .split("\n"));
+                    List<String> original = List.of(
+                            WorkingDirectory.getInstance()
+                                    .getOriginalFile(entry.getKey())
+                                    .getContent()
+                                    .split("\n"));
+
+
+                    String ls = ((TextFile) entry.getValue()).merge(otherValue, original);
+                    StringBuilder sb = new StringBuilder();
+                    for (String s : ls.split("\n")) {
+                        sb.append(s).append("\n");
+                    }
+
+                    TextFile newFile = new TextFile();
+                    newFile.setContent(sb.toString());
+                    newFile.setContent(newFile.getContent().substring(0, newFile.getContent().length() - 1));
+                    newFile.store();
+
+                    if (newFile.getContent().contains("<<<<<<<"))
+                        newFolder.children.put(entry.getKey() + ".cl", newFile);
                     else
-                        newFolder.children.put(entry.getKey(), temp);
+                        newFolder.children.put(entry.getKey(), newFile);
                 } else {
                     newFolder.children.put(entry.getKey(), entry.getValue());
                 }
@@ -182,12 +206,13 @@ public class Folder implements Node {
 
     }
 
+    @Override
     public Folder clone() {
         Folder f = new Folder();
         for (Map.Entry<String, Node> entry : this.children.entrySet()) {
-            f.add(entry.getKey(), entry.getValue());
+            TextFile text = ((TextFile) entry.getValue()).clone();
+            f.add(entry.getKey(), text);
         }
-
         return f;
     }
 }

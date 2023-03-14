@@ -41,7 +41,9 @@ public class WorkingDirectory {
         return this.path.resolve(Paths.get("", path));
     }
 
-
+    public TextFile getOriginalFile(String entry){
+        return (TextFile) this.currentCommit.getParents().get(0).getState().getChildren().get(entry);
+    }
     public Map<String, JGitObject> getCommitMap() {
         return commitMap;
     }

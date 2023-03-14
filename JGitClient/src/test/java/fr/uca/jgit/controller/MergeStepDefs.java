@@ -1,8 +1,6 @@
 package fr.uca.jgit.controller;
 
 
-import fr.uca.jgit.Main;
-import fr.uca.jgit.command.Init;
 import fr.uca.jgit.command.Merge;
 import fr.uca.jgit.command.StateCommit;
 import fr.uca.jgit.model.WorkingDirectory;
@@ -15,13 +13,11 @@ import fr.uca.jgit.model.Folder;
 import fr.uca.jgit.model.TextFile;
 
 import javax.inject.Inject;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 import static org.junit.Assert.assertEquals;
 
 
-public class RepositoryControllerStepdefs {
+public class MergeStepDefs {
     TextFile file;
     Folder folder;
     Commit commit1;
@@ -32,7 +28,7 @@ public class RepositoryControllerStepdefs {
 
 
 
-    public RepositoryControllerStepdefs(){}
+    public MergeStepDefs(){}
 
 
     @Given("a file named file with the content {string}")
@@ -52,10 +48,8 @@ public class RepositoryControllerStepdefs {
         commit1 = new Commit();
         folder.add("file", file.clone());
         commit1.setState(folder.clone());
-
-        StateCommit st = new StateCommit();
-        //wd.setCurrentCommit(commit1); Null ??
         WorkingDirectory.getInstance().setCurrentCommit(commit1);
+        StateCommit st = new StateCommit();
         st.execute("commit1");
     }
 
@@ -66,13 +60,28 @@ public class RepositoryControllerStepdefs {
 
     @When("the content of commit2 is {string}")
     public void the_content_of_commit2_is(String content) {
-        file.setContent(content);
-        ((TextFile) folder.getChildren().get("file")).setContent(content);
-        commit2.setState(folder.clone());
+        Folder f = new Folder();
+        f.add("file", new TextFile(content));
 
-        StateCommit st = new StateCommit();
+        commit2.setState(f);
+        commit2.addParent(commit1);
         WorkingDirectory.getInstance().setCurrentCommit(commit2);
+        StateCommit st = new StateCommit();
         st.execute("commit2");
+    }
+
+    @When("the content of commit3 is {string}")
+    public void the_content_of_commit3_is(String content) {
+        Commit commit3 = new Commit();
+        Folder f = new Folder();
+        f.add("file", new TextFile(content));
+
+        commit3.setState(f.clone());
+        commit3.addParent(commit1);
+
+        WorkingDirectory.getInstance().setCurrentCommit(commit3);
+        StateCommit st = new StateCommit();
+        st.execute("commit3");
 
 
     }
@@ -89,7 +98,7 @@ public class RepositoryControllerStepdefs {
         Commit c = Commit.loadCommit(headHash);
         TextFile f = (TextFile) c.getState().getChildren().get("file");
         if(f == null) f = (TextFile) c.getState().getChildren().get("file.cl");
-        System.out.println(f.getContent() + " " + content);
+        System.err.println(f.getContent() + "  |-|  " + content);
         assertEquals(f.getContent(), content);
     }
 }

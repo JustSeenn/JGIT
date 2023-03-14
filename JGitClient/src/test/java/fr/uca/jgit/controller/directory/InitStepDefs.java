@@ -16,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.io.File;
 import java.io.IOException;
 
-public class InitStepdefs {
+public class InitStepDefs {
 
     @Inject
     WorkingDirectory wd;

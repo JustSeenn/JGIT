@@ -18,15 +18,14 @@ import java.util.List;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Then;
 
-public class CommitStepdefs {
+public class CommitStepDefs {
 	Folder folder;
 	TextFile file;
 	TextFile file2;
 	Commit commit1;
 
-	WorkingDirectory wd = WorkingDirectory.getInstance();
 
-	public CommitStepdefs() {
+	public CommitStepDefs() {
 
 	}
 
