@@ -16,5 +16,8 @@
  - git merge I: As a user, I want to merge my branch so that everyone has the updates about my feature
 
  - git add: As a user, I want to add my modifications so that I can have follow-up of the version of these files
-
+ 
+ - git branch: As a user, I want to create a new branch so that I can work on it independently
+ 
+ - git checkout: As a user, I want to change the current branch I’m working on so that I can work on another version of the application
 
