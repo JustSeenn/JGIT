@@ -1,10 +1,14 @@
 package fr.uca.jgit.model;
 
-import cucumber.runtime.java.guice.ScenarioScoped;
-
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashMap;
 import java.util.Map;
+
+import cucumber.runtime.java.guice.ScenarioScoped;
 
 
 @ScenarioScoped
@@ -17,7 +21,7 @@ public class WorkingDirectory {
 
     private WorkingDirectory() {
         this.path = null;
-        this.commitMap = null;
+        this.commitMap = new HashMap<>();
         this.currentCommit = null;
     }
 
@@ -29,6 +33,11 @@ public class WorkingDirectory {
     }
 
     public Path getPath(String... path) {
+        // Use the user.dir when the working directory path isn't defined
+        if (this.path == null) {
+            this.path = Paths.get(".");
+        }
+
         return this.path.resolve(Paths.get("", path));
     }
 
@@ -65,4 +74,23 @@ public class WorkingDirectory {
         this.path = null;
     }
 
+    /** Get the hash of the last commit from head */
+    public String getHeadHash() {
+        String head;
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader(WorkingDirectory.getInstance().getPath(".jgit", "HEAD").toString()));
+            head = reader.readLine();
+            String line;
+            while ((line = reader.readLine()) != null) {
+                head = line;
+            }
+            if (head == null) {
+                head = "";
+            }
+        } catch (IOException e) {
+            head = "";
+        }
+
+        return head;
+    }
 }

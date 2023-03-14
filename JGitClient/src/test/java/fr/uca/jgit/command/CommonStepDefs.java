@@ -1,16 +1,18 @@
 package fr.uca.jgit.command;
 
-import fr.uca.jgit.model.WorkingDirectory;
-import io.cucumber.java.en.And;
-import io.cucumber.java.en.Given;
-import io.cucumber.java.en.Then;
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+import java.util.List;
+
 import javax.inject.Inject;
+
+import fr.uca.jgit.model.WorkingDirectory;
+import io.cucumber.java.en.And;
+import io.cucumber.java.en.Given;
+import io.cucumber.java.en.Then;
 
 public class CommonStepDefs {
     @Inject
@@ -42,6 +44,16 @@ public class CommonStepDefs {
         }
     }
 
+    @And("add {string} at end of the file {string}")
+    public void addAtEndOfTheFile(String text, String filename) {
+        try {
+            Path filePath = wd.getPath(filename);
+            Files.write(filePath, text.getBytes(), StandardOpenOption.APPEND);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     @Then("we reset the working directory")
     public void weResetTheWorkingDirectory() {
         wd = WorkingDirectory.getInstance();
@@ -58,4 +70,18 @@ public class CommonStepDefs {
 
     }
 
+    @And("the content of file {string} would be {string}")
+    public void theContentOfFileWouldBe(String filename, String content) {
+        Path file = Paths.get(filename);
+        List<String> lines = null;
+        try {
+            lines = Files.readAllLines(file);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        String actualContent = String.join("", lines);
+        if (!actualContent.equals(content)) {
+            throw new AssertionError(String.format("Expected content '%s' but got '%s'", content, actualContent));
+        }
+    }
 }

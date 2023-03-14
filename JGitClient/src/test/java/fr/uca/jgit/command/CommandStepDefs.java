@@ -12,12 +12,14 @@ public class CommandStepDefs {
         this.args = new String[]{"", ""};
     }
 
+    @When("the user execute the command {string}")
     @When("the user want to execute the command {string}")
     public void executeCommandWithoutArgs(String command){
         executeCommand(command, "");
     }
-    
-    @When("the user want to execute the command {string} with argument {string}")
+
+    @When("the user execute the command {string} with argument {string}")
+    @When("the user want to execute the command {string} with argument {string}") // todo: to be removed
     public void executeCommand(String command, String argument) {
         try {
             args[0] = command;

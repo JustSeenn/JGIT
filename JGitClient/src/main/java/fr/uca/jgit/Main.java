@@ -1,13 +1,8 @@
 package fr.uca.jgit;
 
-import fr.uca.jgit.command.Add;
-import fr.uca.jgit.command.Init;
-import fr.uca.jgit.command.Merge;
-import fr.uca.jgit.command.StateCommit;
-import fr.uca.jgit.command.Checkout;
+import fr.uca.jgit.command.*;
 
 import java.io.IOException;
-
 
 public class Main {
 
@@ -23,6 +18,7 @@ public class Main {
             case "merge" -> mainMerge(args[1]);
             case "add" -> mainAdd(args[1]);
             case "checkout" -> mainCheckout(args[1]);
+            case "branch" -> mainBranch(args[1]);
             default -> System.out.println("Command not found");
         }
     }
@@ -58,7 +54,8 @@ public class Main {
         checkout.execute(hash);
     }
 
-
-
-
+    private static void mainBranch(String branchName){
+        Branch branch = new Branch();
+        branch.execute(branchName);
+    }
 }

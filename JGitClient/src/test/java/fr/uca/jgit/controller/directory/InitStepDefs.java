@@ -37,6 +37,8 @@ public class InitStepDefs {
             }
             else if(file.getName().equals("logs")){
                 assertTrue(file.isDirectory());
+            } else if (file.getName().equals("branch_list")) {
+                assertTrue(file.isFile());
             }
             else{
                 fail("Unknown file in .jgit directory: " + file.getName());
