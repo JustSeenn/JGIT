@@ -8,6 +8,7 @@ import javax.inject.Inject;
 import fr.uca.jgit.model.WorkingDirectory;
 
 import java.nio.file.Files;
+import java.nio.file.StandardOpenOption;
 
 import io.cucumber.java.en.*;
 
@@ -23,12 +24,26 @@ public class InitStepDefs {
 
     @Given("a specific working directory")
     public void a_specific_working_directory() {
-        wd = WorkingDirectory.getInstance();
         Path path = Paths.get("init_tmp_files");
-        if(!path.toFile().exists()){
-            path.toFile().mkdir();
+        if(!Files.exists(path)){
+            try{
+                Files.createDirectory(path);
+            } catch (IOException e){
+                System.out.println("Error creating directory");
+            }
         }
+        wd = WorkingDirectory.getInstance();
         wd.setPath(path);
+    }
+
+    @Given("a new specific file named {string} with content {string}")
+    public void initnewfile(String filename, String content){
+        try {
+            Path filePath = wd.getPath(filename);
+            Files.write(filePath, content.getBytes(), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Then("a new jgit repository is created")
@@ -71,6 +86,14 @@ public class InitStepDefs {
     public void no_new_jgit_repository_is_created() throws IOException {
         wd = WorkingDirectory.getInstance();
         assertFalse(Files.isDirectory(wd.getPath(".jgit")));
+        try {
+            Files.walk(wd.getPath())
+                    .sorted((o1, o2) -> o2.compareTo(o1))
+                    .map(Path::toFile)
+                    .forEach(java.io.File::delete);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         wd.setPath(Paths.get("tmpFiles"));
     }
 }
