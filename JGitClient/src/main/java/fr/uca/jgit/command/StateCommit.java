@@ -24,12 +24,14 @@ import fr.uca.jgit.model.WorkingDirectory;
 public class StateCommit extends Command {
 
 	public WorkingDirectory wd = WorkingDirectory.getInstance();
-	
+
 	private static final Logger logger = Logger.getLogger(StateCommit.class.getName());
 
 	/**
 	 * Store the state of the files in the index
-	 * @return The folder that contain the liste of the files concerned by this commit
+	 * 
+	 * @return The folder that contain the liste of the files concerned by this
+	 *         commit
 	 * @throws WrongFileTypeException
 	 */
 	public Folder commitFromIndex() throws WrongFileTypeException {
@@ -45,7 +47,7 @@ public class StateCommit extends Command {
 			}
 			reader.close();
 		} catch (IOException e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 
 		for (String filePath : indexLines) {
@@ -188,6 +190,7 @@ public class StateCommit extends Command {
 			// update the working directory
 			wd.addCommit(c1.hash(), c1);
 			wd.setCurrentCommit(c1);
+
 		} catch (IOException e) {
 			logger.info(e.getMessage());
 		}
@@ -239,7 +242,7 @@ public class StateCommit extends Command {
 				}
 			}
 		} else {
-			System.out.println(startingFolderPath + " is not a directory.");
+			logger.info(startingFolderPath + " is not a directory.");
 		}
 	}
 
