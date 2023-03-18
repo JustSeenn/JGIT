@@ -13,6 +13,11 @@ import java.time.LocalTime;
 public class Checkout extends Command{
     @Override
     public void execute(String... args) {
+        if (args.length == 0){
+            System.out.println("Argument required");
+            return;
+        }
+
         // Check if the branch exists
         File branchFile = new File(WorkingDirectory.getInstance().getPath(".jgit", "logs", args[0]).toString());
         if (!branchFile.exists()) {
@@ -44,8 +49,8 @@ public class Checkout extends Command{
         }
 
         // Checkout to given branch
-        Commit commit = Commit.loadCommit(toHash(args[0]));
-        Commit.restore(toHash(args[0]));
+        Commit commit = Commit.loadCommit(Branch.toHash(args[0]));
+        Commit.restore(Branch.toHash(args[0]));
         WorkingDirectory.getInstance().setCurrentCommit(commit);
 
         // Update current branch name
@@ -69,7 +74,7 @@ public class Checkout extends Command{
 
         StringBuilder headContent = new StringBuilder();
         headContent.append(LocalTime.now().toString()).append("-").append(LocalDate.now()).append("\n");
-        headContent.append(toHash(args[0]));
+        headContent.append(Branch.toHash(args[0]));
 
         try {
             Files.write(headPath, headContent.toString().getBytes(), StandardOpenOption.CREATE,
@@ -77,23 +82,6 @@ public class Checkout extends Command{
         } catch (IOException e) {
             System.out.println("An error occurred while updating the head file.");
             e.printStackTrace();
-        }
-    }
-
-    /**
-     * @param name
-     * @return the commit corresponding to name
-     */
-    private String toHash(String name){
-        // Get object corresponding to the commit
-        try {
-            if (!Branch.isBranch(name)){
-                return name;
-            } else {
-                return (new BufferedReader(new FileReader(WorkingDirectory.getInstance().getPath(".jgit", "logs", name).toString()))).readLine().trim();
-            }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
         }
     }
 }

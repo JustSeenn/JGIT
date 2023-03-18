@@ -69,4 +69,24 @@ public class Branch extends Command {
         } catch (IOException ignored){}
         return branchList.contains(branch);
     }
+
+
+    /**
+     * Transform a given name into a hash
+     *
+     * @param name The name of a branch or the hash of a commit
+     * @return the commit corresponding to name
+     */
+    public static String toHash(String name){
+        // Get object corresponding to the commit
+        try {
+            if (!Branch.isBranch(name)){
+                return name;
+            } else {
+                return (new BufferedReader(new FileReader(WorkingDirectory.getInstance().getPath(".jgit", "logs", name).toString()))).readLine().trim();
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }
