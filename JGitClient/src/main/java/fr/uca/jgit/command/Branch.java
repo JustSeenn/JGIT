@@ -3,7 +3,6 @@ package fr.uca.jgit.command;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,8 +20,7 @@ public class Branch extends Command {
         String branchName = args[0];
 
         // Check if the branch exists
-        File branchFile = new File(Paths.get(".jgit", "logs", branchName).toString());
-        if (branchFile.exists()) {
+        if (isBranch(branchName)) {
             System.out.println("fatal: A branch named " + branchName + " already exists.");
             return;
         }
@@ -62,13 +60,13 @@ public class Branch extends Command {
      * @param branch is the name of the branch. Can be hash or name
      * @return true if the current branch is not a simple commit else false
      */
-    public static boolean isCustomBranch(String branch) throws IOException {
+    public static boolean isBranch(String branch) {
         List<String> branchList = new ArrayList<>();
 
         try {
             BufferedReader br = new BufferedReader(new FileReader(WorkingDirectory.getInstance().getPath(".jgit",  "branch_list").toString()));
             branchList = List.of(br.readLine().split(";"));
-        } catch (FileNotFoundException ignored){}
+        } catch (IOException ignored){}
         return branchList.contains(branch);
     }
 }

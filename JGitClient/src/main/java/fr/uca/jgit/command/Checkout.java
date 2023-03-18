@@ -26,7 +26,7 @@ public class Checkout extends Command{
             if (Files.exists(_current_branch_)){
                 String currentBranchName = (new BufferedReader(new FileReader(_current_branch_.toString()))).readLine().trim();
 
-                if (Branch.isCustomBranch(currentBranchName)){
+                if (Branch.isBranch(currentBranchName)){
                     String head = WorkingDirectory.getInstance().getHeadHash();
                     if (!head.isEmpty()){
                         Path currentBranchPath = WorkingDirectory.getInstance().getPath(".jgit", "logs", currentBranchName);
@@ -51,7 +51,7 @@ public class Checkout extends Command{
         // Update current branch name
         try {
             Path current_branch = WorkingDirectory.getInstance().getPath(".jgit", "logs", "_current_branch_");
-            if (Branch.isCustomBranch(args[0])){
+            if (Branch.isBranch(args[0])){
                 Files.write(current_branch,
                         args[0].getBytes(),
                         StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING
@@ -87,7 +87,7 @@ public class Checkout extends Command{
     private String toHash(String name){
         // Get object corresponding to the commit
         try {
-            if (!Branch.isCustomBranch(name)){
+            if (!Branch.isBranch(name)){
                 return name;
             } else {
                 return (new BufferedReader(new FileReader(WorkingDirectory.getInstance().getPath(".jgit", "logs", name).toString()))).readLine().trim();
