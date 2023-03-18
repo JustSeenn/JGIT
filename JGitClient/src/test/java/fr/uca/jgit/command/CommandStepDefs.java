@@ -13,7 +13,7 @@ public class CommandStepDefs {
     }
 
     @When("the user execute the command {string}")
-    @When("the user want to execute the command {string}")
+    @When("the user want to execute the command {string}")  // todo: to be removed
     public void executeCommandWithoutArgs(String command){
         executeCommand(command, "");
     }
