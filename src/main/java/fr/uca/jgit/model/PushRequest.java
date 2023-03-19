@@ -55,9 +55,9 @@ public class PushRequest {
 	 * @throws IOException
 	 */
 	public void checkInit() throws IOException {
-		createFoldersFromPath(".jgit/");
-		createFoldersFromPath(".jgit/objects/");
-		createFoldersFromPath(".jgit/logs/");
+		createFoldersFromPath(".jgitserver/");
+		createFoldersFromPath(".jgitserver/objects/");
+		createFoldersFromPath(".jgitserver/logs/");
 	}
 
 	/**
@@ -70,7 +70,7 @@ public class PushRequest {
 		// check for date
 
 		// update head
-		storeFile(".jgit/HEAD", head);
+		storeFile(".jgitserver/HEAD", head);
 	}
 
 	/**
@@ -83,7 +83,7 @@ public class PushRequest {
 		// check if commit already exists
 
 		// add commit to logs folder
-		storeFile(".jgit/logs/" + commitHash, commitLog);
+		storeFile(".jgitserver/logs/" + commitHash, commitLog);
 	}
 
 	public void storeObjects() throws IOException {
