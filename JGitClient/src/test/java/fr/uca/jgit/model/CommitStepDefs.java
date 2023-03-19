@@ -19,10 +19,6 @@ import io.cucumber.java.en.And;
 import io.cucumber.java.en.Then;
 
 public class CommitStepDefs {
-	Folder folder;
-	TextFile file;
-	TextFile file2;
-	Commit commit1;
 
 	public CommitStepDefs() {
 
@@ -45,7 +41,10 @@ public class CommitStepDefs {
 		try {
 			// create needed dirs
 			Path filePath = Path.of(filePathString);
-			Path parentPath = Path.of("tmpFiles", filePath.getParent().toString());
+			Path parentPath = null;
+			if (filePath.getParent() != null) {
+				parentPath = Path.of("tmpFiles", filePath.getParent().toString());
+			}
 			if (parentPath != null) {
 				Files.createDirectories(parentPath);
 			}
@@ -75,7 +74,7 @@ public class CommitStepDefs {
 
 	@Then("the object folder contains the right hashed files with the right content")
 	public void the_jgit_object_folder_contains_the_right_hashed_files_with_the_right_content() throws Throwable {
-		// check that objects contains the right files and contents
+		
 		HashMap<String, String> theoriticalObjects = new HashMap<String, String>();
 		theoriticalObjects.put(file.hash(), file.getContent() + "\n");// TODO: check why newline is autoadded?
 		theoriticalObjects.put(file.hash(), file.getContent() + "\n");
