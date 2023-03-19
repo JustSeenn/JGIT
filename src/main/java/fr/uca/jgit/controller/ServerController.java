@@ -2,10 +2,13 @@ package fr.uca.jgit.controller;
 
 import java.io.IOException;
 
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import fr.uca.jgit.model.PullRequest;
 import fr.uca.jgit.model.PushRequest;
 import fr.uca.jgit.util.Util;
 
@@ -22,9 +25,15 @@ public class ServerController {
 		pushRequest.storePushRequest();
 	}
 
-	@PostMapping(value = "/pull")
-	public void pull(@RequestBody String requestString) {
-		// ...
+	@GetMapping()
+	public ResponseEntity<PullRequest> pull() {
+		PullRequest pullRequest = new PullRequest();
+		try {
+			pullRequest.loadPullRequest();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return ResponseEntity.ok(pullRequest);
 	}
 
 	@PostMapping(value = "/clean")
