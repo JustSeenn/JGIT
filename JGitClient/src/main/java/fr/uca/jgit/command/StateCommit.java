@@ -190,6 +190,20 @@ public class StateCommit extends Command {
 			// update the working directory
 			wd.addCommit(c1.hash(), c1);
 			wd.setCurrentCommit(c1);
+			
+			// delete the index after a succesful commit
+	        String indexPath = ".jgit/index";
+	        File indexFile = new File(indexPath);
+	        if (indexFile.exists()) {
+	            boolean deleted = indexFile.delete();
+	            if (deleted) {
+	                System.out.println("Index file deleted successfully.");
+	            } else {
+	                System.out.println("Failed to delete index file.");
+	            }
+	        } else {
+	            System.out.println("Index file does not exist.");
+	        }
 
 		} catch (IOException e) {
 			logger.info(e.getMessage());
