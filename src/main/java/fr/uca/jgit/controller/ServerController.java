@@ -30,7 +30,7 @@ public class ServerController {
 	@PostMapping(value = "/clean")
 	public String clean() {
 		Util.deleteFolder("./.jgitserver");
-		return ".jgit Folder deleted";
+		return ".jgitserver Folder deleted";
 	}
 
 	@PostMapping(value = "/")
