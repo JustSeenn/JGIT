@@ -1,6 +1,7 @@
 package fr.uca.jgit.controller;
 
 import java.io.IOException;
+import java.nio.file.Path;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,9 +20,9 @@ import fr.uca.jgit.util.Util;
 @RestController
 public class ServerController {
 
-	@PostMapping(value = "/push")
+	@PostMapping()
 	public void push(@RequestBody PushRequest pushRequest) throws IOException {
-		Util.deleteFolder("./.jgitserver"); // to be changed
+		Util.deleteFolder(Path.of(".", ".jgitserver").toString()); // to be changed
 		pushRequest.storePushRequest();
 	}
 
@@ -30,20 +31,9 @@ public class ServerController {
 		PullRequest pullRequest = new PullRequest();
 		try {
 			pullRequest.loadPullRequest();
-		} catch (IOException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return ResponseEntity.ok(pullRequest);
-	}
-
-	@PostMapping(value = "/clean")
-	public String clean() {
-		Util.deleteFolder("./.jgitserver");
-		return ".jgitserver Folder deleted";
-	}
-
-	@PostMapping(value = "/")
-	public String home(@RequestBody String requestString) {
-		return requestString;
 	}
 }

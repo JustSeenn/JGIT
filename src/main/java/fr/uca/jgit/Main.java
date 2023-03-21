@@ -20,6 +20,7 @@ public class Main {
             case "checkout" -> mainCheckout(args[1]);
             case "branch" -> mainBranch(args[1]);
             case "pull" -> mainPull();
+            case "push" -> mainPush();
             default -> System.out.println("Command not found");
         }
     }
@@ -60,8 +61,13 @@ public class Main {
         branch.execute(branchName);
     }
 
-    private static void mainPull(){
+    public static void mainPull(){
         Pull pull = new Pull();
         pull.execute();
+    }
+
+    public static void mainPush() {
+        Push push = new Push();
+        push.execute();
     }
 }
