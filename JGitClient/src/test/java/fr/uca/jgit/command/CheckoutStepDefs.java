@@ -17,6 +17,7 @@ public class CheckoutStepDefs {
 
         if (Files.notExists(currentBranchFile)) {
             assertTrue(true);
+            return;
         }
 
         String currentBranch = null;
