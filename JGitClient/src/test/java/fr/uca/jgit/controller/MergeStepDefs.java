@@ -1,6 +1,7 @@
 package fr.uca.jgit.controller;
 
 
+import fr.uca.jgit.command.Add;
 import fr.uca.jgit.command.Merge;
 import fr.uca.jgit.command.StateCommit;
 import fr.uca.jgit.model.WorkingDirectory;
@@ -13,6 +14,10 @@ import fr.uca.jgit.model.Folder;
 import fr.uca.jgit.model.TextFile;
 
 import javax.inject.Inject;
+
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 
 import static org.junit.Assert.assertEquals;
 
@@ -45,10 +50,8 @@ public class MergeStepDefs {
 
     @Given("a commit named commit1 which is the current commit")
     public void a_commit_named_commit1_which_is_the_current_commit() {
-        commit1 = new Commit();
-        folder.add("file", file.clone());
-        commit1.setState(folder.clone());
-        WorkingDirectory.getInstance().setCurrentCommit(commit1);
+
+        Add add = new Add();
         StateCommit st = new StateCommit();
         st.execute("commit1");
     }
@@ -92,13 +95,32 @@ public class MergeStepDefs {
         m.execute(arg0);
     }
 
+    @When("we modify the content of file.txt with {string}")
+    public void we_modify_the_content_of_file_txt_with_hello_the_world(String content) throws IOException {
+        String filePath = "tmpFiles\\file.txt";
+        FileWriter file = new FileWriter(filePath);
+        file.write(content);
+        System.out.println("Successfully wrote to the file.");
+        file.close();
+    }
     @Then("The result of the merge has the content {string}")
     public void the_result_of_the_merge_has_the_content(String content) {
-        String headHash = WorkingDirectory.getInstance().getHeadHash();
-        Commit c = Commit.loadCommit(headHash);
-        TextFile f = (TextFile) c.getState().getChildren().get("file");
-        if(f == null) f = (TextFile) c.getState().getChildren().get("file.cl");
-        System.err.println(f.getContent() + "  |-|  " + content);
-        assertEquals(f.getContent(), content);
+        // get the file.txt in tmpFiles/...
+        File f = new File("tmpFiles\\file.txt.cl");
+        if(!f.exists()){
+            f = new File("tmpFiles\\file.txt");
+        }
+        // get the content of the file f
+        String contentFile = "";
+        try {
+            contentFile = new String(java.nio.file.Files.readAllBytes(f.toPath()));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
+
+        System.err.println(contentFile.replace("\n", "") + "  |-|  " + content);
+        assertEquals(contentFile.replace("\n", ""), content);
     }
 }
