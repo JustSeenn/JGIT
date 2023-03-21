@@ -13,6 +13,7 @@ Feature: Checkout a branch
   Scenario: Checkout a branch that does not exist.
     When the user execute the command "checkout" with argument "dxhrb_invalid_hash_kklfjd"
     Then the current branch is not "dxhrb_invalid_hash_kklfjd"
+    And we reset the working directory
 
   Scenario: Checkout a branch using branch name
     Given the user execute the command "branch" with argument "dev"
@@ -29,3 +30,4 @@ Feature: Checkout a branch
     When the user execute the command "checkout" with argument "prod"
     Then the content of file "test.txt" would be "Text at the first commit.A new text from second commit.The new content on branch prod"
     And the current branch is "prod"
+    And we reset the working directory

@@ -72,7 +72,7 @@ public class CommonStepDefs {
 
     @And("the content of file {string} would be {string}")
     public void theContentOfFileWouldBe(String filename, String content) {
-        Path file = Paths.get(filename);
+        Path file = WorkingDirectory.getInstance().getPath(filename);
         List<String> lines = null;
         try {
             lines = Files.readAllLines(file);
