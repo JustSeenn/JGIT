@@ -57,17 +57,17 @@ public class CommonStepDefs {
     @Then("we reset the working directory")
     public void weResetTheWorkingDirectory() {
         wd = WorkingDirectory.getInstance();
-        try {
-            Files.walk(wd.getPath())
-                    .sorted((o1, o2) -> o2.compareTo(o1))
-                    .map(Path::toFile)
-                    .forEach(java.io.File::delete);
-
-
-        } catch (IOException e) {
-            e.printStackTrace();
+        Path tmpFilesPath = wd.getPath().resolve("tmpFiles");
+        if (Files.exists(tmpFilesPath)) {
+            try {
+                Files.walk(tmpFilesPath)
+                        .sorted((o1, o2) -> o2.compareTo(o1))
+                        .map(Path::toFile)
+                        .forEach(java.io.File::delete);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
-
     }
 
     @And("the content of file {string} would be {string}")

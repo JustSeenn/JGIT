@@ -89,7 +89,7 @@ public class StateCommit extends Command {
 	 * from a path this function will create the corresponding JGit TextFile with
 	 * the right information
 	 * 
-	 * @param path a string to where our system's .txt file is located
+	 * @param systemTextFile a string to where our system's .txt file is located
 	 * @return the newly built TextFile
 	 * @throws WrongFileTypeException
 	 */
@@ -122,7 +122,7 @@ public class StateCommit extends Command {
 	 * from a string path this function will create the corresponding JGit folder
 	 * with the right information
 	 * 
-	 * @param path a string to where our system's folder is located
+	 * @param systemFolder a string to where our system's folder is located
 	 * @return the newly built JGit Folder
 	 * @throws WrongFileTypeException
 	 */
@@ -137,32 +137,11 @@ public class StateCommit extends Command {
 
 	@Override
 	public void execute(String... args) {
-		Commit c1 = new Commit();
-		c1.addParent(wd.getCurrentCommit());
+
 
 		String message = args[0];
-
+		Commit c1 = WorkingDirectory.getInstance().getCurrentCommit();
 		c1.setDescription(message);
-		// the state of a commit is the state of the project's root folder
-		// when we call the commit command we will automatically get
-		// the current state of our folder and save it in this commit object
-		// we need to add all children files/folders into a new Folder object
-
-		// String wdPath = ".";
-		String wdPath = wd.getPath().toString();
-		Folder jGitRootDir = c1.getState();
-		if (jGitRootDir == null) {
-			jGitRootDir = new Folder();
-		}
-//		populateWithChildren(wdPath, jGitRootDir);
-		try {
-			jGitRootDir = commitFromIndex();
-		} catch (WrongFileTypeException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-
-		c1.setState(jGitRootDir);
 
 		c1.getState().store();
 
@@ -219,8 +198,8 @@ public class StateCommit extends Command {
 	 * should be populated with all of its corresponding children in the form of a
 	 * tree
 	 * 
-	 * @param startingFolder
-	 * @param path
+	 * @param jGitStartingFolder
+	 * @param startingFolderPath
 	 */
 	public void populateWithChildren(String startingFolderPath, Folder jGitStartingFolder) {
 		// get the list of children from the given path

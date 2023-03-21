@@ -68,11 +68,6 @@ public class WorkingDirectory {
         return this.currentCommit;
     }
 
-    public void reset() {
-        this.currentCommit = null;
-        this.commitMap = null;
-        this.path = null;
-    }
 
     /** Get the hash of the last commit from head */
     public String getHeadHash() {

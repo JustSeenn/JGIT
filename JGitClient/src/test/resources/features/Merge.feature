@@ -21,5 +21,5 @@ Feature: Merge two commit together
     Scenario: "commit1" and "commit2" are the different and commit1 changed
       When the content of commit3 is "Hello the World"
       When the content of commit2 is "Hello Worldss"
-      And the user want to execute the command "merge" with argument "1c77bdc8106ef925474eeb9374b5ce18"
+      And the user want to execute the command "merge" with argument "beff5b61477ae92aeee7dc415e3be37d"
       Then The result of the merge has the content "<<<<<<<<<Hello Worldss===========Hello the World>>>>>>>>>"
