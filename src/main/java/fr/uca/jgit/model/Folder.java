@@ -146,7 +146,7 @@ public class Folder implements Node,  Cloneable {
             for (Map.Entry<String, Node> entry : children.entrySet()) {
                 System.out.println(entry.getKey() + ":" + entry.getValue());
 
-                entry.getValue().restore(Paths.get(path, entry.getKey()).toString());
+                entry.getValue().restore(Paths.get(entry.getKey()).toString());
             }
         } catch (IOException e) {
 

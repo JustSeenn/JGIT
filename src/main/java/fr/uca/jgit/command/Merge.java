@@ -1,13 +1,13 @@
 package fr.uca.jgit.command;
 
 import fr.uca.jgit.controller.RepositoryController;
-import fr.uca.jgit.model.Commit;
-import fr.uca.jgit.model.Folder;
-import fr.uca.jgit.model.WorkingDirectory;
+import fr.uca.jgit.model.*;
 
 import javax.inject.Inject;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Map;
 
 public class Merge extends Command {
 
@@ -29,9 +29,22 @@ public class Merge extends Command {
         }
 
         Commit c1 = wd.getCurrentCommit();
-        c1.setState((Folder) c1.getState().merge(c2.getState()));
-        c1.addParent(c2);
-        c1.store();
+        Folder toto = (Folder) c1.getState().merge(c2.getState());
+        c1.setState(toto);
+        Add add = new Add();
+
+        for (Map.Entry<String, Node> entry : toto.getChildren().entrySet()) {
+            String filename = entry.getKey();
+            String content = ((TextFile) toto.getChildren().get(filename)).getContent();
+            File file = new File(filename);
+            add.execute(file.getName());
+            try (FileWriter writer = new FileWriter(filename)) {
+                writer.write(content);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
         StateCommit c3 = new StateCommit();
         c3.execute("Merge commit between " + c1.hash() + " and " + args[0]);
 
