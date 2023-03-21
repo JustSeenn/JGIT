@@ -29,7 +29,7 @@ public class Merge extends Command {
         }
 
         Commit c1 = wd.getCurrentCommit();
-        c1.setState((Folder) c1.getState().merge(c2.getState()));
+        c1.setState((Folder) c1.merge(c2));
         c1.addParent(c2);
         c1.store();
         StateCommit c3 = new StateCommit();

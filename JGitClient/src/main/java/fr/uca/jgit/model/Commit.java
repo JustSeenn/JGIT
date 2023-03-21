@@ -150,6 +150,10 @@ public class Commit implements JGitObject {
 
     }
 
+    public Folder merge(Commit commit) {
+        Commit originalCommit = WorkingDirectory.getInstance().getCommonFather(commit);
+        return (Folder) this.state.merge(commit.state, originalCommit.getState());
+    }
     /**
      * Duplicate the commit information in the new [fileName] to represent a custom branch.
      * @param replace - Define if we want to replace [fileName] if the file already exist

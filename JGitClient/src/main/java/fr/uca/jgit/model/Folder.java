@@ -156,46 +156,44 @@ public class Folder implements Node,  Cloneable {
     }
 
 
-    public Node merge(Node other) {
+    public Node merge(Folder other, Folder originalFolder) {
         Folder newFolder = new Folder();
         for (Map.Entry<String, Node> entry : children.entrySet()) {
-            if (other instanceof Folder) {
-                if (((Folder) other).children.containsKey(entry.getKey())) {
 
-                    List<String>  otherValue = List.of(
-                            ((TextFile) ((Folder) other)
-                                    .children.get(
-                                            entry.getKey()
-                                    ))
-                                    .getContent()
-                                    .split("\n"));
-                    List<String> original = List.of(
-                            WorkingDirectory.getInstance()
-                                    .getOriginalFile(entry.getKey())
-                                    .getContent()
-                                    .split("\n"));
+            if (((Folder) other).children.containsKey(entry.getKey())) {
+
+                List<String>  otherValue = List.of(
+                        ((TextFile) ((Folder) other)
+                                .children.get(
+                                        entry.getKey()
+                                ))
+                                .getContent()
+                                .split("\n"));
+                List<String> original = List.of(
+                        originalFolder.children.get(entry.getKey()).toString().split("\n"));
 
 
-                    String ls = ((TextFile) entry.getValue()).merge(otherValue, original);
-                    StringBuilder sb = new StringBuilder();
-                    for (String s : ls.split("\n")) {
-                        sb.append(s).append("\n");
-                    }
 
-                    TextFile newFile = new TextFile();
-                    newFile.setContent(sb.toString());
-                    newFile.setContent(newFile.getContent().substring(0, newFile.getContent().length() - 1));
-                    newFile.store();
-
-                    if (newFile.getContent().contains("<<<<<<<"))
-                        newFolder.children.put(entry.getKey() + ".cl", newFile);
-                    else
-                        newFolder.children.put(entry.getKey(), newFile);
-                } else {
-                    newFolder.children.put(entry.getKey(), entry.getValue());
+                String ls = ((TextFile) entry.getValue()).merge(otherValue, original);
+                StringBuilder sb = new StringBuilder();
+                for (String s : ls.split("\n")) {
+                    sb.append(s).append("\n");
                 }
+
+                TextFile newFile = new TextFile();
+                newFile.setContent(sb.toString());
+                newFile.setContent(newFile.getContent().substring(0, newFile.getContent().length() - 1));
+                newFile.store();
+
+                if (newFile.getContent().contains("<<<<<<<"))
+                    newFolder.children.put(entry.getKey() + ".cl", newFile);
+                else
+                    newFolder.children.put(entry.getKey(), newFile);
+            } else {
+                newFolder.children.put(entry.getKey(), entry.getValue());
             }
         }
+
 
         for (Map.Entry<String, Node> entry : ((Folder) other).children.entrySet()) {
             if (!newFolder.children.containsKey(entry.getKey()) && !newFolder.children.containsKey(entry.getKey() + ".cl")) {

@@ -1,6 +1,7 @@
 package fr.uca.jgit.controller;
 
 
+import fr.uca.jgit.command.Add;
 import fr.uca.jgit.command.Merge;
 import fr.uca.jgit.command.StateCommit;
 import fr.uca.jgit.model.WorkingDirectory;
@@ -34,6 +35,7 @@ public class MergeStepDefs {
     @Given("a file named file with the content {string}")
     public void a_file_named_file_with_the_content(String content) {
         file = new TextFile(content);
+
     }
 
 
@@ -49,6 +51,9 @@ public class MergeStepDefs {
         folder.add("file", file.clone());
         commit1.setState(folder.clone());
         WorkingDirectory.getInstance().setCurrentCommit(commit1);
+
+        Add add = new Add();
+        add.execute(".");
         StateCommit st = new StateCommit();
         st.execute("commit1");
     }
@@ -66,6 +71,8 @@ public class MergeStepDefs {
         commit2.setState(f);
         commit2.addParent(commit1);
         WorkingDirectory.getInstance().setCurrentCommit(commit2);
+        Add add = new Add();
+        add.execute(".");
         StateCommit st = new StateCommit();
         st.execute("commit2");
     }
@@ -80,8 +87,41 @@ public class MergeStepDefs {
         commit3.addParent(commit1);
 
         WorkingDirectory.getInstance().setCurrentCommit(commit3);
+
+        Add add = new Add();
+        add.execute(".");
         StateCommit st = new StateCommit();
         st.execute("commit3");
+
+
+    }
+
+    @When("the content of commit4 is {string}")
+    public void the_content_of_commit4_is(String content) {
+        Commit commit3 = new Commit();
+        Folder f = new Folder();
+        f.add("file", new TextFile(content));
+
+        commit3.setState(f.clone());
+        commit3.addParent(commit1);
+
+        WorkingDirectory.getInstance().setCurrentCommit(commit3);
+
+        Add add = new Add();
+        add.execute(".");
+        StateCommit st = new StateCommit();
+        st.execute("commit3");
+
+        Commit commit4 = new Commit();
+        Folder ff = new Folder();
+        ff.add("file", new TextFile(content));
+        commit4.setState(ff.clone());
+        commit4.addParent(commit3);
+        WorkingDirectory.getInstance().setCurrentCommit(commit4);
+
+
+        add.execute(".");
+        st.execute("commit4");
 
 
     }
@@ -96,8 +136,10 @@ public class MergeStepDefs {
     public void the_result_of_the_merge_has_the_content(String content) {
         String headHash = RepositoryController.getHeadHash();
         Commit c = Commit.loadCommit(headHash);
+
         TextFile f = (TextFile) c.getState().getChildren().get("file");
         if(f == null) f = (TextFile) c.getState().getChildren().get("file.cl");
+
         System.err.println(f.getContent() + "  |-|  " + content);
         assertEquals(f.getContent(), content);
     }
