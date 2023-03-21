@@ -72,7 +72,7 @@ public class StateCommit extends Command {
 	public JGitObject buildJGitObject(File systemFile) {
 		try {
 
-			if (systemFile.isFile() && !systemFile.getName().endsWith("HEAD")) {
+			if (systemFile.isFile() && !systemFile.getName().endsWith("HEAD") ) {
 				return buildJGitTextFile(systemFile);
 			} else if (systemFile.isDirectory()) {
 				return buildJGitFolder(systemFile);
@@ -146,7 +146,7 @@ public class StateCommit extends Command {
 		if (jGitRootDir == null) {
 			jGitRootDir = new Folder();
 		}
-		populateWithChildren(wdPath, jGitRootDir);
+		//populateWithChildren(wdPath, jGitRootDir);
 		try {
 			jGitRootDir = commitFromIndex();
 		} catch (WrongFileTypeException e1) {

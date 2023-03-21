@@ -15,5 +15,4 @@ Feature: Commmit Feature
     Then a hashed commit file has been added
     And the HEAD file has been correctly updated
     And we reset the working directory
-
   

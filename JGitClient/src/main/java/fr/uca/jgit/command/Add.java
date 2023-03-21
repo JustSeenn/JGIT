@@ -36,6 +36,8 @@ public class Add extends Command {
 			File[] files = new File(WorkingDirectory.getInstance().getPath(path).toString()).listFiles();
 			if (files != null) {
 				for (File file : files) {
+					if(file.getPath().contains(".jgit"))
+						continue;
 					if (path.equals("."))
 						path = "";
 					if (file.isDirectory()) {

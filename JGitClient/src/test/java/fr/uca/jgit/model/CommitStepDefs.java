@@ -23,17 +23,7 @@ public class CommitStepDefs {
 
 	}
 
-	private static String readFileContents(File file) throws IOException {
-		StringBuilder sb = new StringBuilder();
-		try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
-			String line;
-			while ((line = reader.readLine()) != null) {
-				sb.append(line);
-				sb.append("\n");
-			}
-		}
-		return sb.toString();
-	}
+
 
 	@And("a temporary .txt file {string} containing {string}")
 	public void createTxtFileWithPath(String filePathString, String content) {
@@ -112,9 +102,9 @@ public class CommitStepDefs {
 			assertTrue(Files.exists(hashedFile));
 			String content = Files.readString(hashedFile);
 			switch (expectedHash) {
-				case "4ffcdb32f8ea74f071f9730c01b9eb64" -> assertEquals("content\r\n", content);
-				case "83dbad1da58d6e1c8c9f22364cad40d3" -> assertEquals("content 1\r\n", content);
-				case "63244b43b3327895df831cd97a62b42b" -> {
+				case "9a0364b9e99bb480dd25e1f0284c8555" -> assertEquals("content", content);
+				case "9297ab3fbd56b42f6566284119238125" -> assertEquals("content 1", content);
+				case "2835fd650ae017013e94b81528f449e5" -> {
 					String expectedContent = """
 							tmpFiles\\file.txt;t;9a0364b9e99bb480dd25e1f0284c8555
 							tmpFiles\\dir1\\file.txt;t;9a0364b9e99bb480dd25e1f0284c8555
@@ -123,7 +113,7 @@ public class CommitStepDefs {
 							""";
 					assertEquals(expectedContent, content);
 				}
-				case "f5f09973797c7ed0391402a474e45416" -> assertEquals("content 2\r\n", content);
+				case "6685cd62b95f2c58818cb20e7292168b" -> assertEquals("content 2", content);
 			}
 		}
 	}
