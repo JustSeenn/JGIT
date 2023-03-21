@@ -7,7 +7,8 @@ Feature: git branch command
   Scenario: Create branch without initial state (initial commit)
     When the user execute the command "branch" with argument "new_branch"
     Then the branch "new_branch" does not created
-    And we reset the working directory
+    And we reset the working dire
+
 
 
   Scenario: Branch already exists
