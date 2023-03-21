@@ -15,16 +15,8 @@ jobs:
       with:
         java-version: 17
         distribution: 'temurin'
-        
-    - name: run server tests
-      working-directory: ./JGitServer
-      run: mvn test
 
-    - name: run client tests
-      working-directory: ./JGitClient
+    - name: run tests
       run: mvn test
-
-    # - name: run tests
-    #   run: mvn test
 
     

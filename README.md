@@ -1,4 +1,23 @@
 # JGIT
-JGIT project (GP course 2022-2023)
 
-Very basic skeleton for a GIT-like tool in Java
+## Authors
+
+ - David AMEDOMEY R.
+ - Héba BOUZIDI
+ - Vincent BOILLOT DEVALLIERE
+ - Fayssal EL ANSARI
+
+## Deployed Features
+
+ - git init: As a user, I want to initialize a repository as my work folder in the version control system
+
+ - git commit: As a user, I want to commit to a repository so that my work is safe and wait to be published
+
+ - git merge I: As a user, I want to merge my branch so that everyone has the updates about my feature
+
+ - git add: As a user, I want to add my modifications so that I can have follow-up of the version of these files
+ 
+ - git branch: As a user, I want to create a new branch so that I can work on it independently
+ 
+ - git checkout: As a user, I want to change the current branch I’m working on so that I can work on another version of the application
+
