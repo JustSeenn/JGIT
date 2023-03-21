@@ -14,6 +14,7 @@ Feature: git branch command
     And the user execute the command "commit" with argument "My first commit"
     When the user execute the command "branch" with argument "first_time"
     And add "A new text." at end of the file "test.txt"
+    And the user execute the command "add" with argument "test.txt" 
     And the user execute the command "commit" with argument "My first commit"
     And the user execute the command "branch" with argument "first_time"
     And the user execute the command "checkout" with argument "first_time"
