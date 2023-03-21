@@ -21,3 +21,6 @@
  
  - git checkout: As a user, I want to change the current branch I’m working on so that I can work on another version of the application
 
+ - git pull: As a user, I want to pull a branch to get all the modifications that have been made
+ 
+ - git push: As a user, I want to push my commits to my branch so that my work Is store In the version control application remotely
