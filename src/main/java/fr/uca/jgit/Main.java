@@ -19,6 +19,8 @@ public class Main {
             case "add" -> mainAdd(args[1]);
             case "checkout" -> mainCheckout(args[1]);
             case "branch" -> mainBranch(args[1]);
+            case "pull" -> mainPull();
+            case "push" -> mainPush();
             default -> System.out.println("Command not found");
         }
     }
@@ -57,5 +59,15 @@ public class Main {
     private static void mainBranch(String branchName){
         Branch branch = new Branch();
         branch.execute(branchName);
+    }
+
+    public static void mainPull(){
+        Pull pull = new Pull();
+        pull.execute();
+    }
+
+    public static void mainPush() {
+        Push push = new Push();
+        push.execute();
     }
 }

@@ -6,10 +6,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author fayss
@@ -30,10 +27,25 @@ public class PushRequest {
 
 	public PushRequest(List<String> commitLog, String commitHash, List<String> head,
 			List<HashMap<String, List<String>>> objects) {
+		serverInit();
 		this.commitLog = commitLog;
 		this.head = head;
 		this.commitHash = commitHash;
 		this.objectsList = objects;
+	}
+
+/*
+ * mimickes the "jgit init" command, creates the .jgitserver folder and its subfolders and HEAD
+ */
+	public void serverInit() {
+		try {
+			Files.createDirectory(Path.of(".jgitserver"));
+			Files.createDirectories(Path.of(".jgitserver", "objects"));
+			Files.createDirectories(Path.of(".jgitserver", "logs"));
+			Files.createFile(Path.of(".jgitserver", "HEAD"));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	/**
@@ -42,7 +54,7 @@ public class PushRequest {
 	 * @throws IOException
 	 */
 	public void storePushRequest() throws IOException {
-//		checkInit(); // not necessary
+		//checkInit(); // not necessary
 		storeHead();
 		storeCommitLog();
 		storeObjects();
@@ -55,11 +67,10 @@ public class PushRequest {
 	 * @throws IOException
 	 */
 	public void checkInit() throws IOException {
-		createFoldersFromPath(".jgitserver/");
-		createFoldersFromPath(".jgitserver/objects/");
-		createFoldersFromPath(".jgitserver/logs/");
+		createFoldersFromPath(Path.of(".jgitserver"));
+		createFoldersFromPath(Path.of(".jgitserver", "objects"));
+		createFoldersFromPath(Path.of(".jgitserver", "logs"));
 	}
-
 	/**
 	 * updates the head if the server's head date is less than the pushed commit's
 	 * head date.
@@ -70,7 +81,7 @@ public class PushRequest {
 		// check for date
 
 		// update head
-		storeFile(".jgitserver/HEAD", head);
+		storeFile(Path.of(".jgitserver", "HEAD"), head);
 	}
 
 	/**
@@ -83,7 +94,7 @@ public class PushRequest {
 		// check if commit already exists
 
 		// add commit to logs folder
-		storeFile(".jgitserver/logs/" + commitHash, commitLog);
+		storeFile(Path.of(".jgitserver", "logs", commitHash), commitLog);
 	}
 
 	public void storeObjects() throws IOException {
@@ -92,21 +103,21 @@ public class PushRequest {
 		// add objects to object folder
 		for (HashMap<String, List<String>> objectMap : objectsList) {
 			for (Map.Entry<String, List<String>> entry : objectMap.entrySet()) {
-				storeFile(".jgit/objects/" + entry.getKey(), entry.getValue());
+				storeFile(Path.of(".jgit", "objects", entry.getKey()), entry.getValue());
 			}
 		}
 	}
 
-	public void storeFile(String filePathString, List<String> contents) throws IOException {
+	public void storeFile(Path filePathString, List<String> contents) throws IOException {
 		// create the path folders if needed
 		createFoldersFromPath(filePathString);
 
 		// create and file in the given path
-		File textFile = new File(filePathString);
+		File textFile = new File(filePathString.toString());
 		textFile.createNewFile();
 
 		// fill the file with the given content
-		BufferedWriter writer = new BufferedWriter(new FileWriter(filePathString));
+		BufferedWriter writer = new BufferedWriter(new FileWriter(filePathString.toString()));
 		for (String line : contents) {
 			writer.write(line);
 			writer.newLine(); // add a newline character after each line
@@ -121,8 +132,7 @@ public class PushRequest {
 	 * @param filePathString
 	 * @throws IOException
 	 */
-	public void createFoldersFromPath(String filePathString) throws IOException {
-		Path filePath = Path.of(filePathString);
+	public void createFoldersFromPath(Path filePath) throws IOException {
 		Path parentPath = Path.of(filePath.getParent().toString());
 		if (parentPath != null) {
 			Files.createDirectories(parentPath);
