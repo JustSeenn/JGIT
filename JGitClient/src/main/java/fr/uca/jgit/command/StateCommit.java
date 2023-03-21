@@ -4,12 +4,14 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -29,10 +31,8 @@ public class StateCommit extends Command {
 
 	/**
 	 * Store the state of the files in the index
-	 * 
 	 * @return The folder that contain the liste of the files concerned by this
 	 *         commit
-	 * @throws WrongFileTypeException
 	 */
 	public Folder commitFromIndex() throws WrongFileTypeException {
 		Folder state = new Folder();
@@ -66,13 +66,13 @@ public class StateCommit extends Command {
 	/**
 	 * 
 	 * @param systemFile
-	 * @return
 	 * @throws WrongFileTypeException
+	 * @return JGitObject
 	 */
 	public JGitObject buildJGitObject(File systemFile) {
 		try {
-			// todo(fix): The text file can't be end with ".txt"
-			if (systemFile.isFile() && systemFile.getName().endsWith(".txt")) {
+
+			if (systemFile.isFile() && !systemFile.getName().endsWith("HEAD")) {
 				return buildJGitTextFile(systemFile);
 			} else if (systemFile.isDirectory()) {
 				return buildJGitFolder(systemFile);
@@ -89,33 +89,25 @@ public class StateCommit extends Command {
 	 * from a path this function will create the corresponding JGit TextFile with
 	 * the right information
 	 * 
-	 * @param systemTextFile a string to where our system's .txt file is located
+	 * @param systemFile a string to where our system's .txt file is located
 	 * @return the newly built TextFile
 	 * @throws WrongFileTypeException
 	 */
-	public TextFile buildJGitTextFile(File systemTextFile) throws WrongFileTypeException {
-		TextFile jGitTextFile = new TextFile();
+	public TextFile buildJGitTextFile(File systemFile) throws WrongFileTypeException {
+		TextFile jGitFile = new TextFile();
 		try {
-			if (systemTextFile.isFile() && systemTextFile.getName().endsWith(".txt")) {
-				StringBuilder contentBuilder = new StringBuilder();
-				try (BufferedReader reader = new BufferedReader(new FileReader(systemTextFile))) {
-					String line;
-					while ((line = reader.readLine()) != null) {
-						contentBuilder.append(line);
-						contentBuilder.append(System.lineSeparator());
-					}
-				} catch (IOException e) {
-					System.err.println("Error reading file: " + e.getMessage());
-				}
-				String content = contentBuilder.toString();
-				jGitTextFile.setContent(content);
+			if (systemFile.isFile()) {
+				byte[] content = Files.readAllBytes(systemFile.toPath());
+				jGitFile.setContent(new String(content, StandardCharsets.US_ASCII));
 			} else {
-				throw new WrongFileTypeException("the file is not a text file");
+				throw new WrongFileTypeException("the file is not a regular file");
 			}
 		} catch (WrongFileTypeException wrongFileTypeException) {
 			logger.info(wrongFileTypeException.getMessage());
+		} catch (IOException e) {
+			throw new RuntimeException(e);
 		}
-		return jGitTextFile;
+		return jGitFile;
 	}
 
 	/**
@@ -137,11 +129,31 @@ public class StateCommit extends Command {
 
 	@Override
 	public void execute(String... args) {
-
+		Commit c1 = new Commit();
+		if(wd.getCurrentCommit() != null)
+			c1.addParent(wd.getCurrentCommit());
 
 		String message = args[0];
-		Commit c1 = WorkingDirectory.getInstance().getCurrentCommit();
+
 		c1.setDescription(message);
+		// the state of a commit is the state of the project's root folder
+		// when we call the commit command we will automatically get
+		// the current state of our folder and save it in this commit object
+		// we need to add all children files/folders into a new Folder object
+
+		String wdPath = wd.getPath().toString();
+		Folder jGitRootDir = c1.getState();
+		if (jGitRootDir == null) {
+			jGitRootDir = new Folder();
+		}
+		populateWithChildren(wdPath, jGitRootDir);
+		try {
+			jGitRootDir = commitFromIndex();
+		} catch (WrongFileTypeException e1) {
+			e1.printStackTrace();
+		}
+
+		c1.setState(jGitRootDir);
 
 		c1.getState().store();
 

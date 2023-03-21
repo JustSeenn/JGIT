@@ -55,18 +55,16 @@ public class CommonStepDefs {
     }
 
     @Then("we reset the working directory")
-    public void weResetTheWorkingDirectory() {
+    public void weResetTheWorkingDirectory() throws IOException {
         wd = WorkingDirectory.getInstance();
-        Path tmpFilesPath = wd.getPath().resolve("tmpFiles");
+        Path tmpFilesPath = Paths.get("tmpFiles");
+        if(! wd.getPath().equals(tmpFilesPath))
+            return;
         if (Files.exists(tmpFilesPath)) {
-            try {
-                Files.walk(tmpFilesPath)
-                        .sorted((o1, o2) -> o2.compareTo(o1))
-                        .map(Path::toFile)
-                        .forEach(java.io.File::delete);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            Files.walk(tmpFilesPath)
+                    .sorted((o1, o2) -> o2.compareTo(o1))
+                    .map(Path::toFile)
+                    .forEach(java.io.File::delete);
         }
     }
 
